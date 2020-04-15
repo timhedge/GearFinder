@@ -10,14 +10,15 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.get('/ebaySearch', (req, res) => {
 
   let searchText = req.query.searchQuery;
+  let pageNum = req.query.pageNum;
 
-  ebay.ebaySearch(searchText, (err, result) => {
+  ebay.ebaySearch(searchText, pageNum, (err, ebayResult) => {
     if (err) {
       //console.log(err);
       res.send(err);
     } else {
       //console.log(result);
-      res.send(result);
+      res.send(ebayResult);
     }
   })
 })
@@ -25,14 +26,15 @@ app.get('/ebaySearch', (req, res) => {
 app.get('/reverbSearch', (req, res) => {
 
   let searchText = req.query.searchQuery;
+  let pageNum = req.query.pageNum;
 
-  rv.reverbSearch(searchText, (err, result) => {
+  rv.reverbSearch(searchText, pageNum, (err, reverbResult) => {
     if (err) {
-      //console.log(err);
+      console.log(err);
       res.send(err);
     } else {
-      //console.log(result);
-      res.send(result);
+      console.log(reverbResult);
+      res.send(reverbResult);
     }
   })
 })

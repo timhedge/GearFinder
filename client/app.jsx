@@ -10,15 +10,26 @@ export default class App extends React.Component {
       searchText: '',
       categories: [],
       listings: [],
-      currentPage: 1
+      currentPage: 1,
+      pageCount: 1,
+      totalListings: 0,
+      listingsPerPage: 48
     }
     this.handleSearchText = this.handleSearchText.bind(this);
     this.handleSearchClick = this.handleSearchClick.bind(this);
+    this.handlePageClick = this.handlePageClick.bind(this);
   }
 
   handleSearchClick() {
-    this.getReverbListings();
-    this.getEbayListings();
+    this.setState({
+      listings: [],
+      currentPage: 1,
+      totalListings: 0
+    }, () => {
+      this.getReverbListings();
+      this.getEbayListings();
+    })
+
     //add more gets
   }
 
@@ -28,15 +39,32 @@ export default class App extends React.Component {
     });
   }
 
+  handlePageClick(clickTarget) {
+    this.setState({
+      currentPage: clickTarget.selected + 1,
+      listings: [],
+      totalListings: 0
+    }, () => {
+      this.getReverbListings();
+      this.getEbayListings();
+    });
+  }
+
   getReverbListings() {
     axios.get('http://localhost:3000/reverbSearch', {
       params: {
-        searchQuery: this.state.searchText
+        searchQuery: this.state.searchText,
+        pageNum: this.state.currentPage
       }
     })
     .then((results) => {
-      // console.log(results.data.listings)
+      let listingCount = results.data.total + this.state.totalListings;
+      let pages = listingCount / this.state.listingsPerPage;
       this.normalizeListings(results.data.listings, 'reverb');
+      this.setState({
+        totalListings: listingCount,
+        pageCount: pages
+      })
     })
     .catch((error) => {
       console.log(error);
@@ -46,12 +74,19 @@ export default class App extends React.Component {
   getEbayListings() {
     axios.get('http://localhost:3000/ebaySearch', {
       params: {
-        searchQuery: this.state.searchText
+        searchQuery: this.state.searchText,
+        pageNum: this.state.currentPage
       }
     })
     .then((results) => {
-      console.log(results.data)
+      console.log(results.data);
+      let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.totalListings;
+      let pages = listingCount / this.state.listingsPerPage;
       this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
+      this.setState({
+        totalListings: listingCount,
+        pageCount: pages
+      })
     })
     .catch((error) => {
       console.log(error);
@@ -60,6 +95,7 @@ export default class App extends React.Component {
 
   normalizeListings(searchResults, source) {
     let tempArray = []; // normalize data and put in one listings array
+    let listingCount = 0;
     for (let i = 0; i < searchResults.length; i++) {
       if (source === 'reverb') {
         let listing = {
