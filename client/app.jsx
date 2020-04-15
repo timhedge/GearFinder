@@ -13,7 +13,8 @@ export default class App extends React.Component {
       currentPage: 1,
       pageCount: 1,
       totalListings: 0,
-      listingsPerPage: 48
+      listingsPerPage: 48,
+      hideSearchResults: true
     }
     this.handleSearchText = this.handleSearchText.bind(this);
     this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -29,8 +30,6 @@ export default class App extends React.Component {
       this.getReverbListings();
       this.getEbayListings();
     })
-
-    //add more gets
   }
 
   handleSearchText(event) {
@@ -58,9 +57,10 @@ export default class App extends React.Component {
       }
     })
     .then((results) => {
+      console.log(results.data)
       let listingCount = results.data.total + this.state.totalListings;
       let pages = listingCount / this.state.listingsPerPage;
-      this.normalizeListings(results.data.listings, 'reverb');
+      this.normalizeListings(results.data.listings, 'Reverb');
       this.setState({
         totalListings: listingCount,
         pageCount: pages
@@ -93,18 +93,18 @@ export default class App extends React.Component {
     })
   }
 
-  normalizeListings(searchResults, source) {
+  normalizeListings(searchResults, source) { // consider moving this to the server side
     let tempArray = []; // normalize data and put in one listings array
     let listingCount = 0;
     for (let i = 0; i < searchResults.length; i++) {
-      if (source === 'reverb') {
+      if (source === 'Reverb') {
         let listing = {
           id: searchResults[i].id,
-          image: searchResults[i].photos[0]._links.thumbnail.href,
+          image: searchResults[i].photos[0]._links.large_crop.href,
           name: searchResults[i].title,
           description: searchResults[i].description,
           price: searchResults[i].price.amount,
-          listingUrl: `reverb.com/item/${searchResults[i].id}`,
+          listingUrl: `http://reverb.com/item/${searchResults[i].id}`,
           source: source
         }
         tempArray.push(listing);
@@ -122,17 +122,21 @@ export default class App extends React.Component {
       }
     }
     this.setState({
-      listings: [...this.state.listings, ...tempArray]
+      listings: [...this.state.listings, ...tempArray],
+      hideSearchResults: false
     });
   }
 
   render() {
     return (
       <div>
-        <h1>GearFinder</h1>
-        <input onChange={this.handleSearchText}></input>
+        <h1>GearFinder<i class="fas fa-drum"></i><i class="fas fa-guitar"></i><i class="fas fa-microphone-alt"></i></h1>
+        <input onChange={this.handleSearchText} value={this.state.searchText}></input>
         <button onClick={this.handleSearchClick}>Search</button>
-        <div className="resultsContainer">
+        <div className={this.state.hideSearchResults ? "placeHolder" : "placeHolder hide"}>
+          <h3>Search Used and Vintage Gear!</h3>
+        </div>
+        <div className={this.state.hideSearchResults ? "resultsContainer hide" : "resultsContainer"}>
           <SearchResults listings={this.state.listings}/>
           <div className="paginateOuter">
             <ReactPaginate

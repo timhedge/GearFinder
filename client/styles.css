@@ -12,6 +12,47 @@ li a {
   margin: 8px;
 }
 
+table {
+  position: relative;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: white;
+}
+
+td {
+  max-height: 150px;
+  min-height: 50px;
+  padding: 10px
+}
+
+.listingName {
+  max-width: 250px;
+  /* min-width: 250px; */
+}
+
+.listingDesc {
+  max-width: 350px;
+}
+
+.longDesc {
+  max-height: 150px;
+  min-height: 50px;
+  overflow: scroll;
+}
+
+.listingImg {
+  max-width: 250px;
+  max-height: 150px;
+}
+
+td.listingCell {
+  max-width: 100px;
+  text-align: center;
+}
+
 .active {
   background-color: rgb(187, 187, 187);
 }
@@ -31,7 +72,11 @@ li:hover {
 }
 
 #searchResults {
-  max-height: 550px;
-  min-height: 550px;
+  max-height: 650px;
+  min-height: 650px;
   overflow: scroll;
+}
+
+.hide {
+  display: none;
 }

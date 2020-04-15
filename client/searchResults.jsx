@@ -8,9 +8,9 @@ const searchResults = (props) => {
         <thead>
           <tr>
             <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Price</th>
             <th></th>
             <th></th>
           </tr>
