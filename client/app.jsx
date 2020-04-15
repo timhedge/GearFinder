@@ -19,6 +19,7 @@ export default class App extends React.Component {
     this.handleSearchText = this.handleSearchText.bind(this);
     this.handleSearchClick = this.handleSearchClick.bind(this);
     this.handlePageClick = this.handlePageClick.bind(this);
+    this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
   }
 
   handleSearchClick() {
@@ -30,6 +31,12 @@ export default class App extends React.Component {
       this.getReverbListings();
       this.getEbayListings();
     })
+  }
+
+  handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+      this.handleSearchClick();
+    }
   }
 
   handleSearchText(event) {
@@ -131,7 +138,7 @@ export default class App extends React.Component {
     return (
       <div>
         <h1>GearFinder<i class="fas fa-drum"></i><i class="fas fa-guitar"></i><i class="fas fa-microphone-alt"></i></h1>
-        <input onChange={this.handleSearchText} value={this.state.searchText}></input>
+        <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
         <button onClick={this.handleSearchClick}>Search</button>
         <div className={this.state.hideSearchResults ? "placeHolder" : "placeHolder hide"}>
           <h3>Search Used and Vintage Gear!</h3>
