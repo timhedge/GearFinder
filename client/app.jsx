@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactPaginate from 'react-paginate';
 import axios from 'axios';
+import SearchResults from './searchResults.jsx';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -49,8 +50,8 @@ export default class App extends React.Component {
       }
     })
     .then((results) => {
-      console.log(results.data)
-      //this.normalizeListings(results.data.listings, 'ebay');
+      //console.log(results.data)
+      this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
     })
     .catch((error) => {
       console.log(error);
@@ -67,13 +68,25 @@ export default class App extends React.Component {
           name: searchResults[i].title,
           description: searchResults[i].description,
           price: searchResults[i].price.amount,
-          listingUrl: `reverb.com/item/${searchResults[i].id}`
+          listingUrl: `reverb.com/item/${searchResults[i].id}`,
+          source: source
+        }
+        tempArray.push(listing);
+      } else if (source === 'ebay') {
+        let listing = {
+          id: searchResults[i].itemId[0],
+          image: searchResults[i].galleryURL[0],
+          name: searchResults[i].title[0],
+          description: searchResults[i].title[0],
+          price: searchResults[i].sellingStatus[0].currentPrice[0].__value__,
+          listingUrl: searchResults[i].viewItemURL[0],
+          source: source
         }
         tempArray.push(listing);
       }
     }
     this.setState({
-      listings: [...tempArray]
+      listings: [...this.state.listings, ...tempArray]
     });
   }
 
@@ -84,6 +97,7 @@ export default class App extends React.Component {
         <input onChange={this.handleSearchText}></input>
         <button onClick={this.handleSearchClick}>Search</button>
         <div className="resultsContainer">
+          <SearchResults listings={this.state.listings}/>
           <ReactPaginate
             previousLabel={'previous'}
             nextLabel={'next'}

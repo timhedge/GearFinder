@@ -1,7 +1,5 @@
 const express = require('express');
 const path = require('path');
-//const axios = require('axios');
-//const cl = require('./craigslistClient.js');
 const rv = require('./reverbApi.js');
 const ebay = require('./ebayApi.js');
 const app = express();
@@ -15,10 +13,10 @@ app.get('/ebaySearch', (req, res) => {
 
   ebay.ebaySearch(searchText, (err, result) => {
     if (err) {
-      console.log(err);
+      //console.log(err);
       res.send(err);
     } else {
-      console.log(result);
+      //console.log(result);
       res.send(result);
     }
   })
