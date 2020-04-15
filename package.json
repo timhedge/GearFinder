@@ -1,0 +1,32 @@
+{
+  "name": "mvp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client/index.jsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-build": "webpack --watch"
+  },
+  "author": "Tim Hedge",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "css-loader": "^3.5.2",
+    "express": "^4.17.1",
+    "node-craigslist": "^2.1.1",
+    "nodemon": "^2.0.3",
+    "path": "^0.12.7",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-paginate": "^6.3.2",
+    "style-loader": "^1.1.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  }
+}
