@@ -1,0 +1,31 @@
+li {
+  float: left;
+  padding: 2px;
+  border: 2px 1px 2px 1px solid black;
+  border-radius: 8px;
+}
+
+li a {
+  display: block;
+  text-align: center;
+  overflow: hidden;
+  margin: 8px;
+}
+
+.active {
+  background-color: rgb(187, 187, 187);
+}
+
+li:hover {
+  background-color: rgb(231, 231, 231);
+}
+
+.paginateOuter {
+  display: table;
+  margin: 0 auto;
+}
+
+.pagination {
+  list-style-type: none;
+  overflow: hidden;
+}

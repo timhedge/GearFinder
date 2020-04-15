@@ -50,7 +50,7 @@ export default class App extends React.Component {
       }
     })
     .then((results) => {
-      //console.log(results.data)
+      console.log(results.data)
       this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
     })
     .catch((error) => {
@@ -98,19 +98,21 @@ export default class App extends React.Component {
         <button onClick={this.handleSearchClick}>Search</button>
         <div className="resultsContainer">
           <SearchResults listings={this.state.listings}/>
-          <ReactPaginate
-            previousLabel={'previous'}
-            nextLabel={'next'}
-            breakLabel={'...'}
-            breakClassName={'break-me'}
-            pageCount={this.state.pageCount}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
-            onPageChange={this.handlePageClick}
-            containerClassName={'pagination'}
-            subContainerClassName={'pages pagination'}
-            activeClassName={'active'}
-          />
+          <div className="paginateOuter">
+            <ReactPaginate
+              previousLabel={'previous'}
+              nextLabel={'next'}
+              breakLabel={'...'}
+              breakClassName={'break-me'}
+              pageCount={this.state.pageCount}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={this.handlePageClick}
+              containerClassName={'pagination'}
+              subContainerClassName={'pages pagination'}
+              activeClassName={'active'}
+            />
+          </div>
         </div>
       </div>
     )

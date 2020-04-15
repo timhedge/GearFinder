@@ -9,7 +9,9 @@ const ebaySearch = (searchText, callback) => {
       'X-EBAY-SOA-RESPONSE-DATA-FORMAT': 'JSON'
     },
     params: {
-      keywords: searchText
+      keywords: searchText,
+      'paginationInput.entriesPerPage': 10,
+      'paginationInput.pageNumber': 1
     }
   })
   .then((results) => {
