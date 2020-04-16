@@ -61,9 +61,13 @@ td {
   border-radius: 8px;
 }
 
-.listingSrcImg {
+.listingSrcReverb {
   max-width: 50px;
   max-height: 50px;
+}
+
+.listingSrcEbay {
+  max-width: 100px;
 }
 
 td.listingCell {
