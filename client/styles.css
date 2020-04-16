@@ -1,3 +1,16 @@
+body {
+  font-family: 'Roboto Mono', monospace;
+}
+
+button {
+  border-style: none;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: rgb(231, 231, 231);
+}
+
 li {
   float: left;
   padding: 2px;
@@ -30,7 +43,6 @@ td {
 
 .listingName {
   max-width: 250px;
-  /* min-width: 250px; */
 }
 
 .listingDesc {
@@ -48,9 +60,22 @@ td {
   max-height: 150px;
 }
 
+.listingSrcImg {
+  max-width: 50px;
+  max-height: 50px;
+}
+
 td.listingCell {
   max-width: 100px;
   text-align: center;
+}
+
+.listingLink {
+  color: rgb(117, 117, 117);
+}
+
+.listingLink:hover {
+  color: rgb(187, 187, 187);
 }
 
 .active {
