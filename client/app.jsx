@@ -12,6 +12,10 @@ export default class App extends React.Component {
       listings: [],
       currentPage: 1,
       pageCount: 1,
+      listingCountByService: {
+        reverb: 0,
+        ebay: 0
+      },
       totalListings: 0,
       listingsPerPage: 48,
       hideSearchResults: true,
@@ -63,8 +67,12 @@ export default class App extends React.Component {
       listings: [],
       totalListings: 0
     }, () => {
-      this.getReverbListings();
-      this.getEbayListings();
+      if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
+        this.getReverbListings();
+      }
+      if (this.state.listingCountByService.ebay >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
+        this.getEbayListings();
+      }
     });
   }
 
@@ -83,6 +91,10 @@ export default class App extends React.Component {
       let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.listings, 'Reverb');
       this.setState({
+        listingCountByService: {
+          reverb: results.data.total,
+          ebay: this.state.listingCountByService.ebay
+        },
         totalListings: listingCount,
         pageCount: pages
       })
@@ -107,6 +119,10 @@ export default class App extends React.Component {
       let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
       this.setState({
+        listingCountByService: {
+          reverb: this.state.listingCountByService.reverb,
+          ebay: parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0])
+        },
         totalListings: listingCount,
         pageCount: pages
       })
