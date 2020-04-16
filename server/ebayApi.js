@@ -1,7 +1,7 @@
 const axios = require('axios');
 const ebayTokens = require('./ebayTokens.js');
 
-const ebaySearch = (searchText, pageNum, callback) => {
+const ebaySearch = (searchText, pageNum, sort, callback) => {
   axios.get(`https://svcs.ebay.com/services/search/FindingService/v1`, {
     headers: {
       'X-EBAY-SOA-OPERATION-NAME': 'findItemsAdvanced',
@@ -11,7 +11,8 @@ const ebaySearch = (searchText, pageNum, callback) => {
     params: {
       keywords: searchText,
       'paginationInput.entriesPerPage': 24,
-      'paginationInput.pageNumber': pageNum
+      'paginationInput.pageNumber': pageNum,
+      'sortOrder': sort
     }
   })
   .then((results) => {

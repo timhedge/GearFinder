@@ -14,12 +14,24 @@ export default class App extends React.Component {
       pageCount: 1,
       totalListings: 0,
       listingsPerPage: 48,
-      hideSearchResults: true
+      hideSearchResults: true,
+      sortField: '',
+      sortOrder: ''
     }
     this.handleSearchText = this.handleSearchText.bind(this);
     this.handleSearchClick = this.handleSearchClick.bind(this);
     this.handlePageClick = this.handlePageClick.bind(this);
     this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
+    this.handleSortClick = this.handleSortClick.bind(this);
+  }
+
+  handleSortClick(event) {
+    this.setState({
+      sortField: event.target.className,
+      sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
+    }, () => {
+     this.handleSearchClick();
+    })
   }
 
   handleSearchClick() {
@@ -60,13 +72,15 @@ export default class App extends React.Component {
     axios.get('http://localhost:3000/reverbSearch', {
       params: {
         searchQuery: this.state.searchText,
-        pageNum: this.state.currentPage
+        pageNum: this.state.currentPage,
+        sortField: this.state.sortField,
+        sortOrder: this.state.sortOrder
       }
     })
     .then((results) => {
       console.log(results.data)
       let listingCount = results.data.total + this.state.totalListings;
-      let pages = listingCount / this.state.listingsPerPage;
+      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.listings, 'Reverb');
       this.setState({
         totalListings: listingCount,
@@ -82,13 +96,15 @@ export default class App extends React.Component {
     axios.get('http://localhost:3000/ebaySearch', {
       params: {
         searchQuery: this.state.searchText,
-        pageNum: this.state.currentPage
+        pageNum: this.state.currentPage,
+        sortField: this.state.sortField,
+        sortOrder: this.state.sortOrder
       }
     })
     .then((results) => {
       console.log(results.data);
       let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.totalListings;
-      let pages = listingCount / this.state.listingsPerPage;
+      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
       this.setState({
         totalListings: listingCount,
@@ -137,14 +153,14 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>GearFinder<i class="fas fa-drum"></i><i class="fas fa-guitar"></i><i class="fas fa-microphone-alt"></i></h1>
+        <h1>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
         <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
         <button onClick={this.handleSearchClick}>Search</button>
         <div className={this.state.hideSearchResults ? "placeHolder" : "placeHolder hide"}>
           <h3>Search Used and Vintage Gear!</h3>
         </div>
         <div className={this.state.hideSearchResults ? "resultsContainer hide" : "resultsContainer"}>
-          <SearchResults listings={this.state.listings}/>
+          <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
           <div className="paginateOuter">
             <ReactPaginate
               previousLabel={'previous'}

@@ -11,8 +11,19 @@ app.get('/ebaySearch', (req, res) => {
 
   let searchText = req.query.searchQuery;
   let pageNum = req.query.pageNum;
+  let sortField = req.query.sortField;
+  let sortOrder = req.query.sortOrder;
+  let sort = 'BestMatch';
 
-  ebay.ebaySearch(searchText, pageNum, (err, ebayResult) => {
+  if (sortField === 'price') {
+    if (sortOrder === 'asc') {
+      sort = 'PricePlusShippingLowest';
+    } else if (sortOrder === 'desc') {
+      sort = 'PricePlusShippingHighest';
+    }
+  }
+
+  ebay.ebaySearch(searchText, pageNum, sort, (err, ebayResult) => {
     if (err) {
       //console.log(err);
       res.send(err);
@@ -27,8 +38,10 @@ app.get('/reverbSearch', (req, res) => {
 
   let searchText = req.query.searchQuery;
   let pageNum = req.query.pageNum;
+  let sortField = req.query.sortField;
+  let sortOrder = req.query.sortOrder;
 
-  rv.reverbSearch(searchText, pageNum, (err, reverbResult) => {
+  rv.reverbSearch(searchText, pageNum, sortOrder, sortField, (err, reverbResult) => {
     if (err) {
       //console.log(err);
       res.send(err);

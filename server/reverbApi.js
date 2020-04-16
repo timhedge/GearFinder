@@ -1,7 +1,7 @@
 const axios = require('axios');
 const reverbToken = require('./reverbToken.js');
 
-const reverbSearch = (searchText, pageNum, callback) => {
+const reverbSearch = (searchText, pageNum, sortOrder, sortField, callback) => {
   axios.get(`https://api.reverb.com/api/listings`, {
     headers: {
       Authorization: `Bearer ${reverbToken}`,
@@ -10,7 +10,8 @@ const reverbSearch = (searchText, pageNum, callback) => {
     params: {
       current_page: pageNum,
       page: pageNum,
-      query: searchText
+      query: searchText,
+      sort: `${sortField}|${sortOrder}`
     }
   })
   .then((results) => {

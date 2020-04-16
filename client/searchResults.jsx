@@ -8,9 +8,9 @@ const searchResults = (props) => {
         <thead>
           <tr>
             <th></th>
-            <th>Item</th>
-            <th>Description</th>
-            <th>Price</th>
+            <th className="item" onClick={props.handleSortClick}>Item</th>
+            <th className="description" onClick={props.handleSortClick}>Description</th>
+  <th className="price" onClick={props.handleSortClick}>Price {props.sortField === 'price' && props.sortOrder === 'asc' ? <i className="fas fa-arrow-up"></i> : props.sortField === 'price' && props.sortOrder === 'desc' ? <i className="fas fa-arrow-down"></i> : ''}</th>
             <th></th>
             <th></th>
           </tr>
