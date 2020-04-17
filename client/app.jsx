@@ -8,6 +8,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       searchText: '',
+      lastSearchText: '',
       categories: [],
       listings: [],
       unsortedListings: [],
@@ -67,6 +68,7 @@ export default class App extends React.Component {
 
   handleSearchClick(callback) {
     this.setState({
+      lastSearchText: this.state.searchText,
       listings: [],
       unsortedListings: [],
       currentPage: 1,
@@ -217,12 +219,17 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
-        <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
-        <button onClick={this.handleSearchClick}>Search</button>
-        <div className={this.state.hideSearchResults ? "placeHolder" : "placeHolder hide"}>
+      <div className={this.state.hideSearchResults ? "container center" : "container"}>
+        <h1 className={this.state.hideSearchResults ? "heading centerText" : "heading"}>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
+        <div className={this.state.hideSearchResults ? "searchContainer centerText" : "searchContainer"}>
+          <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
+          <button onClick={this.handleSearchClick}>Search</button>
+        </div>
+        <div className={this.state.hideSearchResults ? "placeHolder centerText" : "placeHolder hide"}>
           <h3>Search Used and Vintage Gear!</h3>
+        </div>
+        <div className={this.state.hideSearchResults || this.state.lastSearchText === '' ? "listingCount hide" : "listingCount"}>
+          <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
         </div>
         <div className={this.state.hideSearchResults ? "resultsContainer hide" : "resultsContainer"}>
           <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
@@ -242,6 +249,7 @@ export default class App extends React.Component {
             />
           </div>
         </div>
+        <p className={this.state.hideSearchResults ? "footer hide" : "footer"}>Not affiliated with or endorsed by Reverb.com, LLC or eBay Inc.</p>
       </div>
     )
   }
