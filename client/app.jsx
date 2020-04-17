@@ -33,8 +33,9 @@ export default class App extends React.Component {
   }
 
   handleSortClick(event) {
+    console.log(event.target.dataset.column)
     this.setState({
-      sortField: event.target.className,
+      sortField: event.target.dataset.column,
       sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
     }, () => {
       console.log('hello search click')
