@@ -45,10 +45,10 @@ app.get('/reverbSearch', (req, res) => {
 
   rv.reverbSearch(searchText, pageNum, sortOrder, sortField, (err, reverbResult) => {
     if (err) {
-      console.log(err);
+      //console.log(err);
       res.send(err);
     } else {
-      console.log(reverbResult);
+      //console.log(reverbResult);
       res.send(reverbResult);
     }
   })

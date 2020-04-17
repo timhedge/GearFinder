@@ -33,7 +33,6 @@ export default class App extends React.Component {
   }
 
   handleSortClick(event) {
-    console.log(event.target.dataset.column)
     this.setState({
       sortField: event.target.dataset.column,
       sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
@@ -45,7 +44,7 @@ export default class App extends React.Component {
 
   sortListings() {
     let list = this.state.listings;
-    //console.log(list);
+
     if (this.state.sortField === 'price' && this.state.sortOrder === 'asc') {
       let sortedAsc = list.sort((a, b) => {
         return a.price - b.price;
@@ -227,7 +226,7 @@ export default class App extends React.Component {
           <button onClick={this.handleSearchClick}>Search</button>
         </div>
         <div className={this.state.hideSearchResults ? "placeHolder centerText" : "placeHolder hide"}>
-          <h3>Search Used and Vintage Gear!</h3>
+          <h3>Search Used and Vintage Music Gear!</h3>
         </div>
         <div className={this.state.hideSearchResults || this.state.lastSearchText === '' ? "listingCount hide" : "listingCount"}>
           <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
