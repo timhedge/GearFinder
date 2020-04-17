@@ -18,7 +18,7 @@ const searchResults = (props) => {
         <tbody>
           {props.listings.map((listing, index) => {
             return (
-              <Listing index={index} listing={listing}/>
+              <Listing key={index} listing={listing}/>
             )
           })}
         </tbody>

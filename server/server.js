@@ -41,12 +41,14 @@ app.get('/reverbSearch', (req, res) => {
   let sortField = req.query.sortField;
   let sortOrder = req.query.sortOrder;
 
+  console.log(sortField, sortOrder)
+
   rv.reverbSearch(searchText, pageNum, sortOrder, sortField, (err, reverbResult) => {
     if (err) {
-      //console.log(err);
+      console.log(err);
       res.send(err);
     } else {
-      //console.log(reverbResult);
+      console.log(reverbResult);
       res.send(reverbResult);
     }
   })

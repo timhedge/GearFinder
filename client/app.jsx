@@ -10,6 +10,7 @@ export default class App extends React.Component {
       searchText: '',
       categories: [],
       listings: [],
+      unsortedListings: [],
       currentPage: 1,
       pageCount: 1,
       listingCountByService: {
@@ -27,6 +28,7 @@ export default class App extends React.Component {
     this.handlePageClick = this.handlePageClick.bind(this);
     this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
     this.handleSortClick = this.handleSortClick.bind(this);
+    this.sortListings = this.sortListings.bind(this);
   }
 
   handleSortClick(event) {
@@ -34,19 +36,45 @@ export default class App extends React.Component {
       sortField: event.target.className,
       sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
     }, () => {
-     this.handleSearchClick();
+      console.log('hello search click')
+      this.handleSearchClick();
     })
   }
 
-  handleSearchClick() {
+  sortListings() {
+    let list = this.state.listings;
+    //console.log(list);
+    if (this.state.sortField === 'price' && this.state.sortOrder === 'asc') {
+      let sortedAsc = list.sort((a, b) => {
+        return a.price - b.price;
+      })
+      this.setState({
+        listings: sortedAsc
+      })
+    } else if (this.state.sortField === 'price' && this.state.sortOrder === 'desc') {
+      let sortedDesc = list.sort((a, b) => {
+        return b.price - a.price;
+      })
+      this.setState({
+        listings: sortedDesc
+      })
+    } else if (this.state.sortField === 'price' && this.state.sortOrder === '') {
+      this.setState({
+        listings: this.state.unsortedListings
+      })
+    }
+  }
+
+  handleSearchClick(callback) {
     this.setState({
       listings: [],
+      unsortedListings: [],
       currentPage: 1,
       totalListings: 0
     }, () => {
-      this.getReverbListings();
-      this.getEbayListings();
-    })
+        this.getReverbListings();
+        this.getEbayListings();
+      })
   }
 
   handleSearchKeyPress(event) {
@@ -65,15 +93,17 @@ export default class App extends React.Component {
     this.setState({
       currentPage: clickTarget.selected + 1,
       listings: [],
+      unsortedListings: [],
       totalListings: 0
     }, () => {
-      if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
-        this.getReverbListings();
-      }
-      if (this.state.listingCountByService.ebay >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
-        this.getEbayListings();
-      }
-    });
+                if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
+                  this.getReverbListings();
+                }
+                if (this.state.listingCountByService.ebay >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
+                  this.getEbayListings();
+                }
+              }
+    );
   }
 
   getReverbListings() {
@@ -98,6 +128,14 @@ export default class App extends React.Component {
         totalListings: listingCount,
         pageCount: pages
       })
+      return results;
+    })
+    .then((results) => {
+      if (this.state.pageCount < results.data.total_pages) {
+        this.setState({
+          pageCount: this.state.pageCount + 1
+        })
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -126,6 +164,14 @@ export default class App extends React.Component {
         totalListings: listingCount,
         pageCount: pages
       })
+      return results;
+    })
+    .then((results) => {
+      if (this.state.pageCount < parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalPages[0])) {
+        this.setState({
+          pageCount: this.state.pageCount + 1
+        })
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -142,7 +188,7 @@ export default class App extends React.Component {
           image: searchResults[i].photos[0]._links.large_crop.href,
           name: searchResults[i].title,
           description: searchResults[i].description,
-          price: searchResults[i].price.amount,
+          price: parseInt(searchResults[i].price.amount),
           listingUrl: `http://reverb.com/item/${searchResults[i].id}`,
           source: source
         }
@@ -153,7 +199,7 @@ export default class App extends React.Component {
           image: searchResults[i].galleryURL[0],
           name: searchResults[i].title[0],
           description: searchResults[i].title[0],
-          price: searchResults[i].sellingStatus[0].currentPrice[0].__value__,
+          price: parseInt(searchResults[i].sellingStatus[0].currentPrice[0].__value__),
           listingUrl: searchResults[i].viewItemURL[0],
           source: source
         }
@@ -162,7 +208,10 @@ export default class App extends React.Component {
     }
     this.setState({
       listings: [...this.state.listings, ...tempArray],
+      unsortedListings: [...this.state.unsortedListings, ...tempArray],
       hideSearchResults: false
+    }, () => {
+      this.sortListings();
     });
   }
 
