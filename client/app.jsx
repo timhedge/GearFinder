@@ -37,8 +37,8 @@ export default class App extends React.Component {
       sortField: event.target.dataset.column,
       sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
     }, () => {
-      console.log('hello search click')
-      this.handleSearchClick();
+      console.log(this.state.currentPage);
+      this.handleSearchClick(this.state.currentPage);
     })
   }
 
@@ -66,12 +66,15 @@ export default class App extends React.Component {
     }
   }
 
-  handleSearchClick(callback) {
+  handleSearchClick(page) {
+    if (page === 'undefined') {
+      page = 1;
+    }
     this.setState({
       lastSearchText: this.state.searchText,
       listings: [],
       unsortedListings: [],
-      currentPage: 1,
+      currentPage: page,
       totalListings: 0
     }, () => {
         this.getReverbListings();
@@ -119,7 +122,7 @@ export default class App extends React.Component {
     })
     .then((results) => {
       console.log(results.data)
-      let listingCount = results.data.total + this.state.totalListings;
+      let listingCount = results.data.total + this.state.listingCountByService.ebay;
       let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.listings, 'Reverb');
       this.setState({
@@ -155,7 +158,7 @@ export default class App extends React.Component {
     })
     .then((results) => {
       console.log(results.data);
-      let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.totalListings;
+      let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.listingCountByService.reverb;
       let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
       this.setState({
