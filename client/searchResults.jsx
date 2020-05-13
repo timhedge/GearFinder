@@ -3,8 +3,8 @@ import Listing from './listing.jsx';
 
 const searchResults = (props) => {
   return (
-    <div id="searchResults">
-      <table>
+    <div id="searchResults" className="h-100">
+      <table className="h-100">
         <thead>
           <tr>
             <th></th>
@@ -15,7 +15,7 @@ const searchResults = (props) => {
             <th></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="h-100">
           {props.listings.map((listing, index) => {
             return (
               <Listing key={index} listing={listing}/>

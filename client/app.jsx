@@ -222,7 +222,7 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className={this.state.hideSearchResults ? "container center" : "container"}>
+      <div className={this.state.hideSearchResults ? "container center" : "container h-100"}>
         <h1 className={this.state.hideSearchResults ? "heading centerText" : "heading"}>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
         <div className={this.state.hideSearchResults ? "searchContainer centerText" : "searchContainer"}>
           <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
@@ -234,7 +234,7 @@ export default class App extends React.Component {
         <div className={this.state.hideSearchResults || this.state.lastSearchText === '' ? "listingCount hide" : "listingCount"}>
           <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
         </div>
-        <div className={this.state.hideSearchResults ? "resultsContainer hide" : "resultsContainer"}>
+        <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
           <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
           <div className="paginateOuter">
             <ReactPaginate

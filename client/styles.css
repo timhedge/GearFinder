@@ -1,5 +1,10 @@
+html, body {
+  height: 100%;
+}
+
 #root {
   max-width: 1500px;
+  height: 100%;
   margin: auto;
 }
 
@@ -33,6 +38,10 @@ li a {
 
 table {
   position: relative;
+}
+
+tbody {
+  overflow: auto;
 }
 
 th {
@@ -108,8 +117,8 @@ li:hover {
 }
 
 #searchResults {
-  max-height: 650px;
-  min-height: 650px;
+  /* max-height: 650px;
+  min-height: 650px; */
   overflow: auto;
 }
 
