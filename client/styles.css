@@ -2,12 +2,6 @@ html, body {
   height: 100%;
 }
 
-#root {
-  max-width: 1500px;
-  height: 100%;
-  margin: auto;
-}
-
 body {
   font-family: 'Roboto Mono', monospace;
 }
@@ -114,6 +108,10 @@ li:hover {
 .pagination {
   list-style-type: none;
   overflow: hidden;
+}
+
+.searchContainer {
+  margin: 0 0 8px 0;
 }
 
 #searchResults {

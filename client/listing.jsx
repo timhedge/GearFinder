@@ -4,7 +4,7 @@ import ReactHtmlParser from 'react-html-parser';
 const listing = (props) => {
   return (
     <tr key={props.listing.index}>
-      <td>
+      <td scope="row">
         <img className="listingImg" src={props.listing.image}></img>
       </td>
       <td className="listingName">{props.listing.name}</td>

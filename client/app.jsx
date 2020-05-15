@@ -222,14 +222,14 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className={this.state.hideSearchResults ? "container center" : "container h-100"}>
+      <div className={this.state.hideSearchResults ? "container align-middle" : "container h-100"}>
         <h1 className={this.state.hideSearchResults ? "heading centerText" : "heading"}>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
         <div className={this.state.hideSearchResults ? "searchContainer centerText" : "searchContainer"}>
           <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
           <button onClick={this.handleSearchClick}>Search</button>
         </div>
         <div className={this.state.hideSearchResults ? "placeHolder centerText" : "placeHolder hide"}>
-          <h3>Search Used and Vintage Music Gear!</h3>
+          <h4>Search Used and Vintage Music Gear!</h4>
         </div>
         <div className={this.state.hideSearchResults || this.state.lastSearchText === '' ? "listingCount hide" : "listingCount"}>
           <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
