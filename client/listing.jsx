@@ -8,7 +8,7 @@ const listing = (props) => {
         <img className="listingImg" src={props.listing.image}></img>
       </td>
       <td className="listingName">{props.listing.name}</td>
-      <td className="listingDesc">
+      <td className="listingDesc d-none d-sm-table-cell">
         {props.listing.source === 'Reverb' ?
           <div className="longDesc">{ReactHtmlParser(props.listing.description)}</div> : props.listing.description}
       </td>
