@@ -222,37 +222,39 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className={this.state.hideSearchResults ? "container align-middle" : "container h-100"}>
-        <h1 className={this.state.hideSearchResults ? "heading centerText" : "heading"}>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
-        <div className={this.state.hideSearchResults ? "searchContainer centerText" : "searchContainer"}>
-          <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
-          <button onClick={this.handleSearchClick}>Search</button>
-        </div>
-        <div className={this.state.hideSearchResults ? "placeHolder centerText" : "placeHolder hide"}>
-          <h4>Search Used and Vintage Music Gear!</h4>
-        </div>
-        <div className={this.state.hideSearchResults || this.state.lastSearchText === '' ? "listingCount hide" : "listingCount"}>
-          <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
-        </div>
-        <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
-          <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
-          <div className="paginateOuter">
-            <ReactPaginate
-              previousLabel={'previous'}
-              nextLabel={'next'}
-              breakLabel={'...'}
-              breakClassName={'break-me'}
-              pageCount={this.state.pageCount}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={5}
-              onPageChange={this.handlePageClick}
-              containerClassName={'pagination'}
-              subContainerClassName={'pages pagination'}
-              activeClassName={'active'}
-            />
+      <div className={this.state.hideSearchResults ? "container h-100 center vhCenter" : "container h-100"}>
+        <div className="w-100">
+          <h1 className={this.state.hideSearchResults ? "heading centerText center" : "heading"}>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
+          <div className={this.state.hideSearchResults ? "searchContainer centerText center" : "searchContainer"}>
+            <input onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
+            <button onClick={this.handleSearchClick}>Search</button>
           </div>
+          <div className={this.state.hideSearchResults ? "placeHolder centerText center" : "placeHolder hide"}>
+            <h4>Search Used and Vintage Music Gear!</h4>
+          </div>
+          <div className={this.state.hideSearchResults || this.state.lastSearchText === '' ? "listingCount hide" : "listingCount"}>
+            <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
+          </div>
+          <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
+            <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
+            <div className="paginateOuter">
+              <ReactPaginate
+                previousLabel={'previous'}
+                nextLabel={'next'}
+                breakLabel={'...'}
+                breakClassName={'break-me'}
+                pageCount={this.state.pageCount}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={this.handlePageClick}
+                containerClassName={'pagination'}
+                subContainerClassName={'pages pagination'}
+                activeClassName={'active'}
+              />
+            </div>
+          </div>
+          <p className={this.state.hideSearchResults ? "footer hide" : "footer"}>Not affiliated with or endorsed by Reverb.com, LLC or eBay Inc.</p>
         </div>
-        <p className={this.state.hideSearchResults ? "footer hide" : "footer"}>Not affiliated with or endorsed by Reverb.com, LLC or eBay Inc.</p>
       </div>
     )
   }
