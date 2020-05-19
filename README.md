@@ -3,6 +3,7 @@ GearFinder is a web application for finding used and vintage music gear listings
 
 ## Demo
 ![](https://thumbs.gfycat.com/SnivelingDefinitiveAfricanparadiseflycatcher-size_restricted.gif)
+![](https://imgur.com/a/m58Hfwm)
 
 ## User Stories
 - As a user, I want to be able to use keywords to search
