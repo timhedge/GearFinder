@@ -2,8 +2,10 @@
 GearFinder is a web application for finding used and vintage music gear listings on Reverb.com and eBay.  Based on user input, it displays search results returned from both sites' APIs in a single list and provides a link for the user to access the original listing and complete a purchase if they wish. 
 
 ## Demo
+
 ![Desktop](https://i.imgur.com/dUJaDYs.gif)
 
+#### Mobile
 ![Mobile](https://i.imgur.com/gjjjBtK.gif)
 
 ## User Stories
