@@ -224,7 +224,7 @@ export default class App extends React.Component {
     return (
       <div className={this.state.hideSearchResults ? "container h-100 center vhCenter" : "container h-100"}>
         <div className="w-100">
-          <h1 className={this.state.hideSearchResults || screen.width < 575.98 ? "heading centerText center" : "heading"}>GearFinder<i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></h1>
+          <h1 className={this.state.hideSearchResults || screen.width < 575.98 ? "heading centerText center" : "heading"}><span className="block">GearFinder</span><span className="block"><i className="fas fa-drum"></i><i className="fas fa-guitar"></i><i className="fas fa-microphone-alt"></i></span></h1>
           <div className={this.state.hideSearchResults || screen.width < 575.98 ? "searchContainer centerText center" : "searchContainer"}>
             <input className="center searchInput" onChange={this.handleSearchText} onKeyPress={this.handleSearchKeyPress} value={this.state.searchText}></input>
             <button className="center searchButton" onClick={this.handleSearchClick}><i className="fas fa-search"></i></button>

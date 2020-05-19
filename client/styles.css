@@ -169,6 +169,7 @@ li:hover {
 .sortSelect {
   background-color: rgb(231, 231, 231);
   margin: 8px;
+  min-width: 82px;
 }
 
 .price:hover {
@@ -179,17 +180,19 @@ li:hover {
   font-size: 14px;
 }
 
+.block {
+  display: inline-block;
+}
+
 @media (max-width: 575.98px) {
   td {
     max-width: 100px;
-    padding: 10px !important;
   }
 
-  img.listingImg {
-    max-width: 100px;
+  .listingImg {
+    max-width: 76px;
     max-height: 150px;
     border-radius: 8px;
-    padding-right: 10px;
   }
 
   .center {
