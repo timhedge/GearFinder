@@ -4,7 +4,7 @@ GearFinder is a web application for finding used and vintage music gear listings
 ## Demo
 ![Desktop](https://i.imgur.com/dUJaDYs.gif)
 
-![Mobile](https://i.imgur.com/a/QdrlLYs.gif)
+![Mobile](https://i.imgur.com/a/KQMq6F5.gif)
 
 ## User Stories
 - As a user, I want to be able to use keywords to search
