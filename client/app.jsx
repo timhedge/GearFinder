@@ -2,6 +2,7 @@ import React from 'react';
 import ReactPaginate from 'react-paginate';
 import axios from 'axios';
 import SearchResults from './searchResults.jsx';
+import SearchResultsFilter from './searchResultsFilter.jsx';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -236,21 +237,30 @@ export default class App extends React.Component {
             <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
           </div>
           <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
-            <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
-            <div className="paginateOuter">
-              <ReactPaginate
-                previousLabel={'previous'}
-                nextLabel={'next'}
-                breakLabel={'...'}
-                breakClassName={'break-me'}
-                pageCount={this.state.pageCount}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={this.handlePageClick}
-                containerClassName={'pagination'}
-                subContainerClassName={'pages pagination'}
-                activeClassName={'active'}
-              />
+            <div className="container">
+              <div className="row">
+                <div className="col-sm-2">
+                  <SearchResultsFilter></SearchResultsFilter>
+                </div>
+                <div className="col-sm-10">
+                  <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
+                  <div className="paginateOuter">
+                    <ReactPaginate
+                      previousLabel={'previous'}
+                      nextLabel={'next'}
+                      breakLabel={'...'}
+                      breakClassName={'break-me'}
+                      pageCount={this.state.pageCount}
+                      marginPagesDisplayed={2}
+                      pageRangeDisplayed={5}
+                      onPageChange={this.handlePageClick}
+                      containerClassName={'pagination'}
+                      subContainerClassName={'pages pagination'}
+                      activeClassName={'active'}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <p className={this.state.hideSearchResults ? "footer hide" : "footer"}>Not affiliated with or endorsed by Reverb.com, LLC or eBay Inc.</p>
