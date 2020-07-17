@@ -236,7 +236,6 @@ export default class App extends React.Component {
             <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
           </div>
           <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
-            <div>Filter</div>
             <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
             <div className="paginateOuter">
               <ReactPaginate
