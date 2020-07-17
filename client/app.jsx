@@ -13,6 +13,12 @@ export default class App extends React.Component {
       categories: [],
       listings: [],
       unsortedListings: [],
+      unfilteredListings: [],
+      filterApplied: false,
+      filterParams: {
+        minPrice: undefined,
+        maxPrice: undefined
+      },
       currentPage: 1,
       pageCount: 1,
       listingCountByService: {
@@ -31,6 +37,9 @@ export default class App extends React.Component {
     this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
     this.handleSortClick = this.handleSortClick.bind(this);
     this.sortListings = this.sortListings.bind(this);
+    this.filterListings = this.filterListings.bind(this);
+    this.handleMaxPriceFilterChange = this.handleMaxPriceFilterChange.bind(this);
+    this.handleMinPriceFilterChange = this.handleMinPriceFilterChange.bind(this);
   }
 
   handleSortClick(event) {
@@ -41,6 +50,44 @@ export default class App extends React.Component {
       console.log(this.state.currentPage);
       this.handleSearchClick(event, this.state.currentPage);
     })
+  }
+
+  filterListings(event) {
+    event.preventDefault();
+    let filteredArray = [];
+    let filteredCount = 0;
+
+    for (let i = 0; i < this.state.listings.length; i++) {
+      if (this.state.listings[i].price <= this.state.filterParams.maxPrice && this.state.listings[i].price >= this.state.filterParams.minPrice) {
+        filteredArray.push(this.state.listings[i]);
+        filteredCount += 1;
+      }
+    }
+
+    // needs to take into account number of filtered pages
+
+    this.setState({
+      listings: filteredArray,
+      filterApplied: true
+    });
+  }
+
+  handleMinPriceFilterChange(event) {
+    this.setState({
+      filterParams: {
+        minPrice: parseInt(event.target.value),
+        maxPrice: this.state.filterParams.maxPrice
+      }
+    });
+  }
+
+  handleMaxPriceFilterChange(event) {
+    this.setState({
+      filterParams: {
+        minPrice: this.state.filterParams.minPrice,
+        maxPrice: parseInt(event.target.value)
+      }
+    });
   }
 
   sortListings() {
@@ -75,6 +122,7 @@ export default class App extends React.Component {
       lastSearchText: this.state.searchText,
       listings: [],
       unsortedListings: [],
+      unfilteredListings: [],
       currentPage: page,
       totalListings: 0
     }, () => {
@@ -100,6 +148,7 @@ export default class App extends React.Component {
       currentPage: clickTarget.selected + 1,
       listings: [],
       unsortedListings: [],
+      unfilteredListings: [],
       totalListings: 0
     }, () => {
                 if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
@@ -215,6 +264,7 @@ export default class App extends React.Component {
     this.setState({
       listings: [...this.state.listings, ...tempArray],
       unsortedListings: [...this.state.unsortedListings, ...tempArray],
+      unfilteredListings: [...this.state.unfilteredListings, ...tempArray],
       hideSearchResults: false
     }, () => {
       this.sortListings();
@@ -240,7 +290,7 @@ export default class App extends React.Component {
             <div className="container">
               <div className="row">
                 <div className="col-sm-2">
-                  <SearchResultsFilter></SearchResultsFilter>
+                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} filterParams={this.state.filterParams}></SearchResultsFilter>
                 </div>
                 <div className="col-sm-10">
                   <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
