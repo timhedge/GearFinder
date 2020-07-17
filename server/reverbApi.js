@@ -15,6 +15,7 @@ const reverbSearch = (searchText, pageNum, sortOrder, sortField, callback) => {
     }
   })
   .then((results) => {
+    //console.log(results);
     callback(results.data);
   })
   .catch((error) => {

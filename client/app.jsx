@@ -38,7 +38,7 @@ export default class App extends React.Component {
       sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
     }, () => {
       console.log(this.state.currentPage);
-      this.handleSearchClick(this.state.currentPage);
+      this.handleSearchClick(event, this.state.currentPage);
     })
   }
 
@@ -66,8 +66,8 @@ export default class App extends React.Component {
     }
   }
 
-  handleSearchClick(page) {
-    if (page === 'undefined') {
+  handleSearchClick(event, page) {
+    if (page === undefined) {
       page = 1;
     }
     this.setState({
@@ -84,7 +84,7 @@ export default class App extends React.Component {
 
   handleSearchKeyPress(event) {
     if (event.key === 'Enter') {
-      this.handleSearchClick();
+      this.handleSearchClick(event);
     }
   }
 
@@ -236,6 +236,7 @@ export default class App extends React.Component {
             <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
           </div>
           <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
+            <div>Filter</div>
             <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
             <div className="paginateOuter">
               <ReactPaginate
