@@ -2,6 +2,7 @@ import React from 'react';
 import ReactPaginate from 'react-paginate';
 import axios from 'axios';
 import SearchResults from './searchResults.jsx';
+import SearchResultsFilter from './searchResultsFilter.jsx';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -12,8 +13,15 @@ export default class App extends React.Component {
       categories: [],
       listings: [],
       unsortedListings: [],
+      unfilteredListings: [],
+      filterApplied: false,
+      filterParams: {
+        minPrice: undefined,
+        maxPrice: undefined
+      },
       currentPage: 1,
       pageCount: 1,
+      unfilteredPageCount: 1,
       listingCountByService: {
         reverb: 0,
         ebay: 0
@@ -30,6 +38,10 @@ export default class App extends React.Component {
     this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
     this.handleSortClick = this.handleSortClick.bind(this);
     this.sortListings = this.sortListings.bind(this);
+    this.filterListings = this.filterListings.bind(this);
+    this.handleMaxPriceFilterChange = this.handleMaxPriceFilterChange.bind(this);
+    this.handleMinPriceFilterChange = this.handleMinPriceFilterChange.bind(this);
+    this.clearFilter = this.clearFilter.bind(this);
   }
 
   handleSortClick(event) {
@@ -40,6 +52,61 @@ export default class App extends React.Component {
       console.log(this.state.currentPage);
       this.handleSearchClick(event, this.state.currentPage);
     })
+  }
+
+  filterListings(event) {
+    event.preventDefault();
+    let filteredArray = [];
+    let unfilteredArray = this.state.listings;
+    let unfilteredPages = this.state.pageCount;
+    let filteredCount = 0;
+
+    for (let i = 0; i < this.state.listings.length; i++) {
+      if (this.state.listings[i].price <= this.state.filterParams.maxPrice && this.state.listings[i].price >= this.state.filterParams.minPrice) {
+        filteredArray.push(this.state.listings[i]);
+        filteredCount += 1;
+      }
+    }
+
+    let filteredPageCount = Math.ceil(filteredArray.length / this.state.listingsPerPage);
+
+    this.setState({
+      listings: filteredArray,
+      unfilteredListings: unfilteredArray,
+      filterApplied: true,
+      pageCount: filteredPageCount,
+      unfilteredPageCount: unfilteredPages
+    });
+  }
+
+  clearFilter(event) {
+    this.setState({
+      listings: this.state.unfilteredListings,
+      filterApplied: false,
+      pageCount: this.state.unfilteredPageCount,
+      filterParams: {
+        minPrice: '',
+        maxPrice: ''
+      }
+    })
+  }
+
+  handleMinPriceFilterChange(event) {
+    this.setState({
+      filterParams: {
+        minPrice: parseInt(event.target.value),
+        maxPrice: this.state.filterParams.maxPrice
+      }
+    });
+  }
+
+  handleMaxPriceFilterChange(event) {
+    this.setState({
+      filterParams: {
+        minPrice: this.state.filterParams.minPrice,
+        maxPrice: parseInt(event.target.value)
+      }
+    });
   }
 
   sortListings() {
@@ -74,6 +141,7 @@ export default class App extends React.Component {
       lastSearchText: this.state.searchText,
       listings: [],
       unsortedListings: [],
+      unfilteredListings: [],
       currentPage: page,
       totalListings: 0
     }, () => {
@@ -99,6 +167,7 @@ export default class App extends React.Component {
       currentPage: clickTarget.selected + 1,
       listings: [],
       unsortedListings: [],
+      unfilteredListings: [],
       totalListings: 0
     }, () => {
                 if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
@@ -214,6 +283,7 @@ export default class App extends React.Component {
     this.setState({
       listings: [...this.state.listings, ...tempArray],
       unsortedListings: [...this.state.unsortedListings, ...tempArray],
+      unfilteredListings: [...this.state.unfilteredListings, ...tempArray],
       hideSearchResults: false
     }, () => {
       this.sortListings();
@@ -236,21 +306,30 @@ export default class App extends React.Component {
             <p>{this.state.totalListings} results for "{this.state.lastSearchText}"</p>
           </div>
           <div className={this.state.hideSearchResults ? "h-75 hide" : "h-75"}>
-            <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
-            <div className="paginateOuter">
-              <ReactPaginate
-                previousLabel={'previous'}
-                nextLabel={'next'}
-                breakLabel={'...'}
-                breakClassName={'break-me'}
-                pageCount={this.state.pageCount}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={this.handlePageClick}
-                containerClassName={'pagination'}
-                subContainerClassName={'pages pagination'}
-                activeClassName={'active'}
-              />
+            <div className="container">
+              <div className="row">
+                <div className="col-sm-2">
+                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} clearFilter={this.clearFilter} filterParams={this.state.filterParams}></SearchResultsFilter>
+                </div>
+                <div className="col-sm-10">
+                  <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
+                  <div className="paginateOuter">
+                    <ReactPaginate
+                      previousLabel={'previous'}
+                      nextLabel={'next'}
+                      breakLabel={'...'}
+                      breakClassName={'break-me'}
+                      pageCount={this.state.pageCount}
+                      marginPagesDisplayed={2}
+                      pageRangeDisplayed={5}
+                      onPageChange={this.handlePageClick}
+                      containerClassName={'pagination'}
+                      subContainerClassName={'pages pagination'}
+                      activeClassName={'active'}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <p className={this.state.hideSearchResults ? "footer hide" : "footer"}>Not affiliated with or endorsed by Reverb.com, LLC or eBay Inc.</p>
