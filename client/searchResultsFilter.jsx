@@ -9,7 +9,7 @@ const searchResultsFilter = (props) => {
         <input type="number" className="form-control" placeholder="max" min="1" value={props.filterParams.maxPrice} onChange={props.handleMaxPriceFilterChange}></input>
       </div>
       <button type="submit" className="btn btn-secondary">Filter</button>
-      <button type="button" className="btn btn-light">Clear</button>
+      <button type="button" onClick={props.clearFilter} className="btn btn-light">Clear</button>
     </form>
   )
 }

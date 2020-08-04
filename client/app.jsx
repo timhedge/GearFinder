@@ -21,6 +21,7 @@ export default class App extends React.Component {
       },
       currentPage: 1,
       pageCount: 1,
+      unfilteredPageCount: 1,
       listingCountByService: {
         reverb: 0,
         ebay: 0
@@ -40,6 +41,7 @@ export default class App extends React.Component {
     this.filterListings = this.filterListings.bind(this);
     this.handleMaxPriceFilterChange = this.handleMaxPriceFilterChange.bind(this);
     this.handleMinPriceFilterChange = this.handleMinPriceFilterChange.bind(this);
+    this.clearFilter = this.clearFilter.bind(this);
   }
 
   handleSortClick(event) {
@@ -55,6 +57,8 @@ export default class App extends React.Component {
   filterListings(event) {
     event.preventDefault();
     let filteredArray = [];
+    let unfilteredArray = this.state.listings;
+    let unfilteredPages = this.state.pageCount;
     let filteredCount = 0;
 
     for (let i = 0; i < this.state.listings.length; i++) {
@@ -64,12 +68,27 @@ export default class App extends React.Component {
       }
     }
 
-    // needs to take into account number of filtered pages
+    let filteredPageCount = Math.ceil(filteredArray.length / this.state.listingsPerPage);
 
     this.setState({
       listings: filteredArray,
-      filterApplied: true
+      unfilteredListings: unfilteredArray,
+      filterApplied: true,
+      pageCount: filteredPageCount,
+      unfilteredPageCount: unfilteredPages
     });
+  }
+
+  clearFilter(event) {
+    this.setState({
+      listings: this.state.unfilteredListings,
+      filterApplied: false,
+      pageCount: this.state.unfilteredPageCount,
+      filterParams: {
+        minPrice: '',
+        maxPrice: ''
+      }
+    })
   }
 
   handleMinPriceFilterChange(event) {
@@ -290,7 +309,7 @@ export default class App extends React.Component {
             <div className="container">
               <div className="row">
                 <div className="col-sm-2">
-                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} filterParams={this.state.filterParams}></SearchResultsFilter>
+                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} clearFilter={this.clearFilter} filterParams={this.state.filterParams}></SearchResultsFilter>
                 </div>
                 <div className="col-sm-10">
                   <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
