@@ -14,6 +14,7 @@ export default class App extends React.Component {
       listings: [],
       unsortedListings: [],
       unfilteredListings: [],
+      brandList: [],
       filterApplied: false,
       filterParams: {
         minPrice: undefined,
@@ -180,6 +181,25 @@ export default class App extends React.Component {
     );
   }
 
+  compileBrandList(descriptionArray) {
+    for (let i = 0; i < descriptionArray.length; i++) {
+      axios.get('http://localhost:3000/validateBrandName', {
+        params: {
+          brandToCheck: descriptionArray[i].toLowerCase()
+        }
+      })
+      .then((results) => {
+        let resultBrands = results.data.map((entry) => { return entry.brandName })
+        this.setState({
+          brandList: [...this.state.brandList, ...resultBrands]
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    }
+  }
+
   getReverbListings() {
     axios.get('http://localhost:3000/reverbSearch', {
       params: {
@@ -278,6 +298,8 @@ export default class App extends React.Component {
           source: source
         }
         tempArray.push(listing);
+        let descriptionWords = listing.description.split(' ');
+        this.compileBrandList(descriptionWords);
       }
     }
     this.setState({

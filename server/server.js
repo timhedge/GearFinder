@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const rv = require('./reverbApi.js');
 const ebay = require('./ebayApi.js');
+const db = require('../db/db.js');
 const app = express();
 const port = 3000;
 
@@ -48,6 +49,23 @@ app.get('/reverbSearch', (req, res) => {
     } else {
       //console.log(reverbResult);
       res.send(reverbResult);
+    }
+  })
+})
+
+app.get('/validateBrandName', (req, res) => {
+
+  let word = req.query.brandToCheck;
+
+  db.validateBrandName(word, (err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      if (result.length !== 0) {
+        res.send(result);
+      } else {
+        res.end();
+      }
     }
   })
 })
