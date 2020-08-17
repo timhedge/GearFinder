@@ -14,7 +14,7 @@
     "bootstrap": "^4.5.0",
     "css-loader": "^3.5.2",
     "express": "^4.17.1",
-    "jquery": "^1.12.4",
+    "jquery": "^3.5.0",
     "mongoose": "^5.10.0",
     "node-craigslist": "^2.1.1",
     "nodemon": "^2.0.3",
