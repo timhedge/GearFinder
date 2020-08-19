@@ -9,49 +9,61 @@ const port = 3000;
 async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
   let promiseEbay = new Promise((resolve, reject) => {
     ebay.ebaySearch(searchText, pageNum, sort, (ebayResult) => {
-      resolve(normalizeListings(ebayResult.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay'));
+      resolve(normalizeListings(ebayResult.findItemsAdvancedResponse[0], 'ebay'));
     });
   });
   let promiseReverb = new Promise((resolve, reject) => {
     rv.reverbSearch(searchText, pageNum, sortOrder, sortField, (reverbResult) => {
-      resolve(normalizeListings(reverbResult.listings, 'Reverb'));
+      resolve(normalizeListings(reverbResult, 'Reverb'));
     });
   })
-  let result = [...await promiseEbay, ...await promiseReverb];
+  let ebayData = await promiseEbay;
+  let reverbData = await promiseReverb;
+  let result = {
+    listings: [...ebayData.tempListings, ...reverbData.tempListings],
+    listingCount: ebayData.tempCount + reverbData.tempCount
+  }
   return result;
 }
 
 const normalizeListings = (searchResults, source) => {
-  let tempArray = []; // normalize data and put in one listings array
-  for (let i = 0; i < searchResults.length; i++) {
-    if (source === 'Reverb') {
-      let listing = {
-        id: searchResults[i].id,
-        image: searchResults[i].photos[0]._links.large_crop.href,
-        name: searchResults[i].title,
-        brand: [searchResults[i].make],
-        description: searchResults[i].description,
-        price: parseInt(searchResults[i].price.amount),
-        listingUrl: `http://reverb.com/item/${searchResults[i].id}`,
-        source: source
-      }
-      tempArray.push(listing);
-    } else if (source === 'ebay') {
-      let descriptionWords = searchResults[i].title[0];
-      let listing = {
-        id: searchResults[i].itemId[0],
-        image: searchResults[i].galleryURL[0],
-        name: searchResults[i].title[0],
-        brand: '', //(() => { return this.getBrandFromDescription(descriptionWords)})(),
-        description: descriptionWords,
-        price: parseInt(searchResults[i].sellingStatus[0].currentPrice[0].__value__),
-        listingUrl: searchResults[i].viewItemURL[0],
-        source: source
-      }
-      tempArray.push(listing);
-    }
+  let tempObj = {
+    tempListings: [],
+    tempCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalEntries[0]) : source === 'Reverb' ? searchResults.total : 0
   }
-  return tempArray;
+  if (source === 'Reverb') {
+    let listingResults = searchResults.listings;
+    for (let i = 0; i < listingResults.length; i++) {
+      let listing = {
+        id: listingResults[i].id,
+        image: listingResults[i].photos[0]._links.large_crop.href,
+        name: listingResults[i].title,
+        brand: [listingResults[i].make],
+        description: listingResults[i].description,
+        price: parseInt(listingResults[i].price.amount),
+        listingUrl: `http://reverb.com/item/${listingResults[i].id}`,
+        source: source
+      }
+      tempObj.tempListings.push(listing);
+    }
+  } else if (source === 'ebay') {
+      let listingResults = searchResults.searchResult[0].item;
+      for (let i = 0; i < listingResults.length; i++) {
+        let descriptionWords = listingResults[i].title[0];
+        let listing = {
+          id: listingResults[i].itemId[0],
+          image: listingResults[i].galleryURL[0],
+          name: listingResults[i].title[0],
+          brand: [''],
+          description: descriptionWords,
+          price: parseInt(listingResults[i].sellingStatus[0].currentPrice[0].__value__),
+          listingUrl: listingResults[i].viewItemURL[0],
+          source: source
+        }
+        tempObj.tempListings.push(listing);
+      }
+  }
+  return tempObj;
 }
 
 app.use(express.static(path.join(__dirname, '../public')));
@@ -72,18 +84,17 @@ app.get('/search', (req, res) => {
     }
   } // ebay
 
-  let resultData = []
+  let resultData = {
+    listingCount: 0,
+    listings: []
+  }
 
   getListings(searchText, pageNum, sort, sortOrder, sortField)
   .then((data) => {
-    resultData.push(data)
+    resultData.listings = [...data.listings];
+    resultData.listingCount = data.listingCount;
     res.send(resultData)
-  })
-
-
-  // rv.reverbSearch(searchText, pageNum, sortOrder, sortField, (reverbResult) => {
-  //     resultData.push(normalizeListings(reverbResult, 'Reverb'));
-  // });
+  });
 
 });
 

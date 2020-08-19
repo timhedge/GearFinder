@@ -182,38 +182,38 @@ export default class App extends React.Component {
     );
   }
 
-  addToBrandList(brandArray) {
-    for (let i = 0; i < brandArray.length; i++) {
-      if (this.state.brandList[brandArray[i]] === undefined) {
-        let updatedBrandList = this.state.brandList;
-        updatedBrandList[brandArray[i]] = true;
-        this.setState({
-          brandList: updatedBrandList
-        })
-      }
-    }
-  }
+  // addToBrandList(brandArray) {
+  //   for (let i = 0; i < brandArray.length; i++) {
+  //     if (this.state.brandList[brandArray[i]] === undefined) {
+  //       let updatedBrandList = this.state.brandList;
+  //       updatedBrandList[brandArray[i]] = true;
+  //       this.setState({
+  //         brandList: updatedBrandList
+  //       })
+  //     }
+  //   }
+  // }
 
 
-  getBrandFromDescription(descriptionArray) {
-    for (let i = 0; i < descriptionArray.length; i++) {
-      axios.get('http://localhost:3000/validateBrandName', {
-        params: {
-          brandToCheck: descriptionArray[i].toLowerCase()
-        }
-      })
-      .then((results) => {
-        if (results.data !== 'Not Found') {
-          let resultBrands = results.data.map((entry) => { return entry.brandName });
-           return resultBrands;
-          //this.addToBrandList(resultBrands);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-    }
-  }
+  // getBrandFromDescription(descriptionArray) {
+  //   for (let i = 0; i < descriptionArray.length; i++) {
+  //     axios.get('http://localhost:3000/validateBrandName', {
+  //       params: {
+  //         brandToCheck: descriptionArray[i].toLowerCase()
+  //       }
+  //     })
+  //     .then((results) => {
+  //       if (results.data !== 'Not Found') {
+  //         let resultBrands = results.data.map((entry) => { return entry.brandName });
+  //          return resultBrands;
+  //         //this.addToBrandList(resultBrands);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     })
+  //   }
+  // }
 
   getListings() {
     axios.get('http://localhost:3000/search', {
@@ -226,6 +226,19 @@ export default class App extends React.Component {
     })
     .then((results) => {
       console.log(results.data);
+      let listingCount = results.data.listingCount;
+      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
+      console.log(pages, listingCount / this.state.listingsPerPage)
+      this.setState({
+        totalListings: listingCount,
+        pageCount: pages, // PAGE COUNT IS NOT CORRECT - need to pass from server side
+        listings: [...results.data.listings],
+        unsortedListings: [...results.data.listings],
+        unfilteredListings: [...results.data.listings],
+        hideSearchResults: false
+      }, () => {
+      this.sortListings();
+      });
     })
     .catch((error) => {
       console.log(error);
@@ -242,7 +255,6 @@ export default class App extends React.Component {
       }
     })
     .then((results) => {
-      console.log(results.data)
       let listingCount = results.data.total + this.state.listingCountByService.ebay;
       let pages = Math.ceil(listingCount / this.state.listingsPerPage);
       this.normalizeListings(results.data.listings, 'Reverb');
