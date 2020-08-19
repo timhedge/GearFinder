@@ -14,7 +14,7 @@ export default class App extends React.Component {
       listings: [],
       unsortedListings: [],
       unfilteredListings: [],
-      brandList: [],
+      brandList: {},
       filterApplied: false,
       filterParams: {
         minPrice: undefined,
@@ -181,7 +181,20 @@ export default class App extends React.Component {
     );
   }
 
-  compileBrandList(descriptionArray) {
+  addToBrandList(brandArray) {
+    for (let i = 0; i < brandArray.length; i++) {
+      if (this.state.brandList[brandArray[i]] === undefined) {
+        let updatedBrandList = this.state.brandList;
+        updatedBrandList[brandArray[i]] = true;
+        this.setState({
+          brandList: updatedBrandList
+        })
+      }
+    }
+  }
+
+
+  getBrandFromDescription(descriptionArray) {
     for (let i = 0; i < descriptionArray.length; i++) {
       axios.get('http://localhost:3000/validateBrandName', {
         params: {
@@ -189,10 +202,11 @@ export default class App extends React.Component {
         }
       })
       .then((results) => {
-        let resultBrands = results.data.map((entry) => { return entry.brandName })
-        this.setState({
-          brandList: [...this.state.brandList, ...resultBrands]
-        })
+        if (results.data !== 'Not Found') {
+          let resultBrands = results.data.map((entry) => { return entry.brandName });
+           return resultBrands;
+          //this.addToBrandList(resultBrands);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -281,6 +295,7 @@ export default class App extends React.Component {
           id: searchResults[i].id,
           image: searchResults[i].photos[0]._links.large_crop.href,
           name: searchResults[i].title,
+          brand: [searchResults[i].make],
           description: searchResults[i].description,
           price: parseInt(searchResults[i].price.amount),
           listingUrl: `http://reverb.com/item/${searchResults[i].id}`,
@@ -288,18 +303,18 @@ export default class App extends React.Component {
         }
         tempArray.push(listing);
       } else if (source === 'ebay') {
+        let descriptionWords = searchResults[i].title[0];
         let listing = {
           id: searchResults[i].itemId[0],
           image: searchResults[i].galleryURL[0],
           name: searchResults[i].title[0],
-          description: searchResults[i].title[0],
+          brand: '', //(() => { return this.getBrandFromDescription(descriptionWords)})(),
+          description: descriptionWords,
           price: parseInt(searchResults[i].sellingStatus[0].currentPrice[0].__value__),
           listingUrl: searchResults[i].viewItemURL[0],
           source: source
         }
         tempArray.push(listing);
-        let descriptionWords = listing.description.split(' ');
-        this.compileBrandList(descriptionWords);
       }
     }
     this.setState({
