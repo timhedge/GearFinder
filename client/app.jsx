@@ -146,8 +146,9 @@ export default class App extends React.Component {
       currentPage: page,
       totalListings: 0
     }, () => {
-        this.getReverbListings();
-        this.getEbayListings();
+        this.getListings();
+        // this.getReverbListings();
+        // this.getEbayListings();
       })
   }
 
@@ -212,6 +213,23 @@ export default class App extends React.Component {
         console.log(error);
       })
     }
+  }
+
+  getListings() {
+    axios.get('http://localhost:3000/search', {
+      params: {
+        searchQuery: this.state.searchText,
+        pageNum: this.state.currentPage,
+        sortField: this.state.sortField,
+        sortOrder: this.state.sortOrder
+      }
+    })
+    .then((results) => {
+      console.log(results.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   getReverbListings() {
