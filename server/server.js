@@ -6,6 +6,22 @@ const db = require('../db/db.js');
 const app = express();
 const port = 3000;
 
+async function getBrandNamesFromListings() { // NEED TO REDO THIS
+    let word = req.query.brandToCheck;
+
+    db.validateBrandName(word, (err, result) => {
+      if (err) {
+        res.send(err);
+      } else {
+        if (result.length !== 0) {
+          res.send(result);
+        } else {
+          res.send('Not Found');
+        }
+      }
+    })
+}
+
 async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
   let promiseEbay = new Promise((resolve, reject) => {
     ebay.ebaySearch(searchText, pageNum, sort, (ebayResult) => {
@@ -115,22 +131,5 @@ app.get('/search', (req, res) => {
   })
 
 });
-
-app.get('/validateBrandName', (req, res) => {
-
-  let word = req.query.brandToCheck;
-
-  db.validateBrandName(word, (err, result) => {
-    if (err) {
-      res.send(err);
-    } else {
-      if (result.length !== 0) {
-        res.send(result);
-      } else {
-        res.send('Not Found');
-      }
-    }
-  })
-})
 
 app.listen(port, () => console.log(`GearFinder app listening at http://localhost:${port}`));

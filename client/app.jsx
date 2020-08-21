@@ -172,39 +172,6 @@ export default class App extends React.Component {
     });
   }
 
-  // addToBrandList(brandArray) {
-  //   for (let i = 0; i < brandArray.length; i++) {
-  //     if (this.state.brandList[brandArray[i]] === undefined) {
-  //       let updatedBrandList = this.state.brandList;
-  //       updatedBrandList[brandArray[i]] = true;
-  //       this.setState({
-  //         brandList: updatedBrandList
-  //       })
-  //     }
-  //   }
-  // }
-
-
-  // getBrandFromDescription(descriptionArray) {
-  //   for (let i = 0; i < descriptionArray.length; i++) {
-  //     axios.get('http://localhost:3000/validateBrandName', {
-  //       params: {
-  //         brandToCheck: descriptionArray[i].toLowerCase()
-  //       }
-  //     })
-  //     .then((results) => {
-  //       if (results.data !== 'Not Found') {
-  //         let resultBrands = results.data.map((entry) => { return entry.brandName });
-  //          return resultBrands;
-  //         //this.addToBrandList(resultBrands);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     })
-  //   }
-  // }
-
   getListings() {
     axios.get('http://localhost:3000/search', {
       params: {
