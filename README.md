@@ -14,11 +14,11 @@ GearFinder is a web application for finding used and vintage music gear listings
 - As a user, I want to see a picture, description, price, and source of each search result
 - As a user, I want to be able to click on a link to go to the orginal listing and complete my purchase
 - As a user, I want to be able to sort by price
+- As a user, I want to be able to filter by price range
 
 ### Coming Soon
 - As a user, I want to be able to recall a recent search
 - As a user, I want to be able to add a listing to a watch list
-- As a user, I want to be able to filter by price range
 - As a user, I want to be able to filter by item category
 - As a user, I want to be able to filter by brand
 
