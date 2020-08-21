@@ -9,7 +9,15 @@ const port = 3000;
 async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
   let promiseEbay = new Promise((resolve, reject) => {
     ebay.ebaySearch(searchText, pageNum, sort, (ebayResult) => {
-      resolve(normalizeListings(ebayResult.findItemsAdvancedResponse[0], 'ebay'));
+      let ebayPageNum = ebayResult.findItemsAdvancedResponse[0].paginationOutput[0].pageNumber[0];
+      let ebaySearchResults = ebayResult.findItemsAdvancedResponse[0];
+      let source = 'ebay';
+      if (pageNum === ebayPageNum) {
+        resolve(normalizeListings(ebaySearchResults, source));
+      } else {
+        ebayResult.findItemsAdvancedResponse[0].isDefaultPage = true;
+        resolve(normalizeListings(ebaySearchResults, source));
+      }
     });
   });
   let promiseReverb = new Promise((resolve, reject) => {
@@ -21,7 +29,8 @@ async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
   let reverbData = await promiseReverb;
   let result = {
     listings: [...ebayData.tempListings, ...reverbData.tempListings],
-    listingCount: ebayData.tempCount + reverbData.tempCount
+    listingCount: ebayData.tempCount + reverbData.tempCount,
+    listingPages: ebayData.tempPageCount > reverbData.tempPageCount ? ebayData.tempPageCount : reverbData.tempPageCount
   }
   return result;
 }
@@ -29,7 +38,11 @@ async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
 const normalizeListings = (searchResults, source) => {
   let tempObj = {
     tempListings: [],
-    tempCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalEntries[0]) : source === 'Reverb' ? searchResults.total : 0
+    tempCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalEntries[0]) : source === 'Reverb' ? searchResults.total : 0,
+    tempPageCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalPages[0]) : source === 'Reverb' ? searchResults.total_pages : 0
+  }
+  if (searchResults.isDefaultPage === true) {
+    return tempObj;
   }
   if (source === 'Reverb') {
     let listingResults = searchResults.listings;
@@ -86,15 +99,20 @@ app.get('/search', (req, res) => {
 
   let resultData = {
     listingCount: 0,
-    listings: []
+    listings: [],
+    listingPages: 0
   }
 
   getListings(searchText, pageNum, sort, sortOrder, sortField)
   .then((data) => {
     resultData.listings = [...data.listings];
     resultData.listingCount = data.listingCount;
-    res.send(resultData)
-  });
+    resultData.listingPages = data.listingPages;
+    res.send(resultData);
+  })
+  .catch((error) => {
+    console.log(error);
+  })
 
 });
 

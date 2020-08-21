@@ -172,12 +172,13 @@ export default class App extends React.Component {
       unfilteredListings: [],
       totalListings: 0
     }, () => {
-                if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
-                  this.getReverbListings();
-                }
-                if (this.state.listingCountByService.ebay >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
-                  this.getEbayListings();
-                }
+      this.getListings();
+                // if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
+                //   this.getReverbListings();
+                // }
+                // if (this.state.listingCountByService.ebay >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
+                //   this.getEbayListings();
+                // }
               }
     );
   }
@@ -226,12 +227,9 @@ export default class App extends React.Component {
     })
     .then((results) => {
       console.log(results.data);
-      let listingCount = results.data.listingCount;
-      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
-      console.log(pages, listingCount / this.state.listingsPerPage)
       this.setState({
-        totalListings: listingCount,
-        pageCount: pages, // PAGE COUNT IS NOT CORRECT - need to pass from server side
+        totalListings: results.data.listingCount,
+        pageCount: results.data.listingPages,
         listings: [...results.data.listings],
         unsortedListings: [...results.data.listings],
         unfilteredListings: [...results.data.listings],
@@ -245,76 +243,76 @@ export default class App extends React.Component {
     });
   }
 
-  getReverbListings() {
-    axios.get('http://localhost:3000/reverbSearch', {
-      params: {
-        searchQuery: this.state.searchText,
-        pageNum: this.state.currentPage,
-        sortField: this.state.sortField,
-        sortOrder: this.state.sortOrder
-      }
-    })
-    .then((results) => {
-      let listingCount = results.data.total + this.state.listingCountByService.ebay;
-      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
-      this.normalizeListings(results.data.listings, 'Reverb');
-      this.setState({
-        listingCountByService: {
-          reverb: results.data.total,
-          ebay: this.state.listingCountByService.ebay
-        },
-        totalListings: listingCount,
-        pageCount: pages
-      })
-      return results;
-    })
-    .then((results) => {
-      if (this.state.pageCount < results.data.total_pages) {
-        this.setState({
-          pageCount: this.state.pageCount + 1
-        })
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-  }
+  // getReverbListings() {
+  //   axios.get('http://localhost:3000/reverbSearch', {
+  //     params: {
+  //       searchQuery: this.state.searchText,
+  //       pageNum: this.state.currentPage,
+  //       sortField: this.state.sortField,
+  //       sortOrder: this.state.sortOrder
+  //     }
+  //   })
+  //   .then((results) => {
+  //     let listingCount = results.data.total + this.state.listingCountByService.ebay;
+  //     let pages = Math.ceil(listingCount / this.state.listingsPerPage);
+  //     this.normalizeListings(results.data.listings, 'Reverb');
+  //     this.setState({
+  //       listingCountByService: {
+  //         reverb: results.data.total,
+  //         ebay: this.state.listingCountByService.ebay
+  //       },
+  //       totalListings: listingCount,
+  //       pageCount: pages
+  //     })
+  //     return results;
+  //   })
+  //   .then((results) => {
+  //     if (this.state.pageCount < results.data.total_pages) {
+  //       this.setState({
+  //         pageCount: this.state.pageCount + 1
+  //       })
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   })
+  // }
 
-  getEbayListings() {
-    axios.get('http://localhost:3000/ebaySearch', {
-      params: {
-        searchQuery: this.state.searchText,
-        pageNum: this.state.currentPage,
-        sortField: this.state.sortField,
-        sortOrder: this.state.sortOrder
-      }
-    })
-    .then((results) => {
-      console.log(results.data);
-      let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.listingCountByService.reverb;
-      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
-      this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
-      this.setState({
-        listingCountByService: {
-          reverb: this.state.listingCountByService.reverb,
-          ebay: parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0])
-        },
-        totalListings: listingCount,
-        pageCount: pages
-      })
-      return results;
-    })
-    .then((results) => {
-      if (this.state.pageCount < parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalPages[0])) {
-        this.setState({
-          pageCount: this.state.pageCount + 1
-        })
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-  }
+  // getEbayListings() {
+  //   axios.get('http://localhost:3000/ebaySearch', {
+  //     params: {
+  //       searchQuery: this.state.searchText,
+  //       pageNum: this.state.currentPage,
+  //       sortField: this.state.sortField,
+  //       sortOrder: this.state.sortOrder
+  //     }
+  //   })
+  //   .then((results) => {
+  //     console.log(results.data);
+  //     let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.listingCountByService.reverb;
+  //     let pages = Math.ceil(listingCount / this.state.listingsPerPage);
+  //     this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
+  //     this.setState({
+  //       listingCountByService: {
+  //         reverb: this.state.listingCountByService.reverb,
+  //         ebay: parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0])
+  //       },
+  //       totalListings: listingCount,
+  //       pageCount: pages
+  //     })
+  //     return results;
+  //   })
+  //   .then((results) => {
+  //     if (this.state.pageCount < parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalPages[0])) {
+  //       this.setState({
+  //         pageCount: this.state.pageCount + 1
+  //       })
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   })
+  // }
 
   normalizeListings(searchResults, source) { // consider moving this to the server side
     let tempArray = []; // normalize data and put in one listings array
