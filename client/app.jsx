@@ -23,10 +23,6 @@ export default class App extends React.Component {
       currentPage: 1,
       pageCount: 1,
       unfilteredPageCount: 1,
-      listingCountByService: {
-        reverb: 0,
-        ebay: 0
-      },
       totalListings: 0,
       listingsPerPage: 48,
       hideSearchResults: true,
@@ -138,6 +134,7 @@ export default class App extends React.Component {
     if (page === undefined) {
       page = 1;
     }
+    console.log(page)
     this.setState({
       lastSearchText: this.state.searchText,
       listings: [],
@@ -146,8 +143,7 @@ export default class App extends React.Component {
       currentPage: page,
       totalListings: 0
     }, () => {
-        this.getReverbListings();
-        this.getEbayListings();
+        this.getListings();
       })
   }
 
@@ -164,6 +160,7 @@ export default class App extends React.Component {
   }
 
   handlePageClick(clickTarget) {
+    console.log(clickTarget.selected)
     this.setState({
       currentPage: clickTarget.selected + 1,
       listings: [],
@@ -171,87 +168,12 @@ export default class App extends React.Component {
       unfilteredListings: [],
       totalListings: 0
     }, () => {
-                if (this.state.listingCountByService.reverb >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
-                  this.getReverbListings();
-                }
-                if (this.state.listingCountByService.ebay >= (this.state.currentPage - 1) * (this.state.listingsPerPage / 2)) {
-                  this.getEbayListings();
-                }
-              }
-    );
+      this.getListings();
+    });
   }
 
-  addToBrandList(brandArray) {
-    for (let i = 0; i < brandArray.length; i++) {
-      if (this.state.brandList[brandArray[i]] === undefined) {
-        let updatedBrandList = this.state.brandList;
-        updatedBrandList[brandArray[i]] = true;
-        this.setState({
-          brandList: updatedBrandList
-        })
-      }
-    }
-  }
-
-
-  getBrandFromDescription(descriptionArray) {
-    for (let i = 0; i < descriptionArray.length; i++) {
-      axios.get('http://localhost:3000/validateBrandName', {
-        params: {
-          brandToCheck: descriptionArray[i].toLowerCase()
-        }
-      })
-      .then((results) => {
-        if (results.data !== 'Not Found') {
-          let resultBrands = results.data.map((entry) => { return entry.brandName });
-           return resultBrands;
-          //this.addToBrandList(resultBrands);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-    }
-  }
-
-  getReverbListings() {
-    axios.get('http://localhost:3000/reverbSearch', {
-      params: {
-        searchQuery: this.state.searchText,
-        pageNum: this.state.currentPage,
-        sortField: this.state.sortField,
-        sortOrder: this.state.sortOrder
-      }
-    })
-    .then((results) => {
-      console.log(results.data)
-      let listingCount = results.data.total + this.state.listingCountByService.ebay;
-      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
-      this.normalizeListings(results.data.listings, 'Reverb');
-      this.setState({
-        listingCountByService: {
-          reverb: results.data.total,
-          ebay: this.state.listingCountByService.ebay
-        },
-        totalListings: listingCount,
-        pageCount: pages
-      })
-      return results;
-    })
-    .then((results) => {
-      if (this.state.pageCount < results.data.total_pages) {
-        this.setState({
-          pageCount: this.state.pageCount + 1
-        })
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-  }
-
-  getEbayListings() {
-    axios.get('http://localhost:3000/ebaySearch', {
+  getListings() {
+    axios.get('http://localhost:3000/search', {
       params: {
         searchQuery: this.state.searchText,
         pageNum: this.state.currentPage,
@@ -261,69 +183,19 @@ export default class App extends React.Component {
     })
     .then((results) => {
       console.log(results.data);
-      let listingCount = parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0]) + this.state.listingCountByService.reverb;
-      let pages = Math.ceil(listingCount / this.state.listingsPerPage);
-      this.normalizeListings(results.data.findItemsAdvancedResponse[0].searchResult[0].item, 'ebay');
       this.setState({
-        listingCountByService: {
-          reverb: this.state.listingCountByService.reverb,
-          ebay: parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalEntries[0])
-        },
-        totalListings: listingCount,
-        pageCount: pages
-      })
-      return results;
-    })
-    .then((results) => {
-      if (this.state.pageCount < parseInt(results.data.findItemsAdvancedResponse[0].paginationOutput[0].totalPages[0])) {
-        this.setState({
-          pageCount: this.state.pageCount + 1
-        })
-      }
+        totalListings: results.data.listingCount,
+        pageCount: results.data.listingPages,
+        listings: [...results.data.listings],
+        unsortedListings: [...results.data.listings],
+        unfilteredListings: [...results.data.listings],
+        hideSearchResults: false
+      }, () => {
+      this.sortListings();
+      });
     })
     .catch((error) => {
       console.log(error);
-    })
-  }
-
-  normalizeListings(searchResults, source) { // consider moving this to the server side
-    let tempArray = []; // normalize data and put in one listings array
-    let listingCount = 0;
-    for (let i = 0; i < searchResults.length; i++) {
-      if (source === 'Reverb') {
-        let listing = {
-          id: searchResults[i].id,
-          image: searchResults[i].photos[0]._links.large_crop.href,
-          name: searchResults[i].title,
-          brand: [searchResults[i].make],
-          description: searchResults[i].description,
-          price: parseInt(searchResults[i].price.amount),
-          listingUrl: `http://reverb.com/item/${searchResults[i].id}`,
-          source: source
-        }
-        tempArray.push(listing);
-      } else if (source === 'ebay') {
-        let descriptionWords = searchResults[i].title[0];
-        let listing = {
-          id: searchResults[i].itemId[0],
-          image: searchResults[i].galleryURL[0],
-          name: searchResults[i].title[0],
-          brand: '', //(() => { return this.getBrandFromDescription(descriptionWords)})(),
-          description: descriptionWords,
-          price: parseInt(searchResults[i].sellingStatus[0].currentPrice[0].__value__),
-          listingUrl: searchResults[i].viewItemURL[0],
-          source: source
-        }
-        tempArray.push(listing);
-      }
-    }
-    this.setState({
-      listings: [...this.state.listings, ...tempArray],
-      unsortedListings: [...this.state.unsortedListings, ...tempArray],
-      unfilteredListings: [...this.state.unfilteredListings, ...tempArray],
-      hideSearchResults: false
-    }, () => {
-      this.sortListings();
     });
   }
 
@@ -363,6 +235,7 @@ export default class App extends React.Component {
                       containerClassName={'pagination'}
                       subContainerClassName={'pages pagination'}
                       activeClassName={'active'}
+                      forcePage={this.state.currentPage - 1}
                     />
                   </div>
                 </div>
