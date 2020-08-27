@@ -189,6 +189,7 @@ export default class App extends React.Component {
         listings: [...results.data.listings],
         unsortedListings: [...results.data.listings],
         unfilteredListings: [...results.data.listings],
+        brandList: results.data.listingBrands,
         hideSearchResults: false
       }, () => {
       this.sortListings();
@@ -218,7 +219,7 @@ export default class App extends React.Component {
             <div className="container">
               <div className="row">
                 <div className="col-sm-2">
-                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} clearFilter={this.clearFilter} filterParams={this.state.filterParams}></SearchResultsFilter>
+                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} clearFilter={this.clearFilter} filterParams={this.state.filterParams} brandList={this.state.brandList}></SearchResultsFilter>
                 </div>
                 <div className="col-sm-10">
                   <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>

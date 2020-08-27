@@ -63,7 +63,8 @@ async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
   let result = {
     listings: [...ebayData.tempListings, ...reverbData.tempListings],
     listingCount: ebayData.tempCount + reverbData.tempCount,
-    listingPages: ebayData.tempPageCount > reverbData.tempPageCount ? ebayData.tempPageCount : reverbData.tempPageCount
+    listingPages: ebayData.tempPageCount > reverbData.tempPageCount ? ebayData.tempPageCount : reverbData.tempPageCount,
+    listingBrands: ebayData.tempBrands
   }
   return result;
 }
@@ -72,7 +73,8 @@ async function normalizeListings(searchResults, source) {
   let tempObj = {
     tempListings: [],
     tempCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalEntries[0]) : source === 'Reverb' ? searchResults.total : 0,
-    tempPageCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalPages[0]) : source === 'Reverb' ? searchResults.total_pages : 0
+    tempPageCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalPages[0]) : source === 'Reverb' ? searchResults.total_pages : 0,
+    tempBrands: {}
   }
   if (searchResults.isDefaultPage === true) {
     return tempObj;
@@ -97,7 +99,7 @@ async function normalizeListings(searchResults, source) {
       for (let i = 0; i < listingResults.length; i++) {
         let descriptionWords = listingResults[i].title[0];
         let brands = await getBrandNamesFromListings(descriptionWords).then((data) => {
-          console.log(data)
+          data.forEach((d) => { tempObj.tempBrands[d] = true });
           return data });
         let listing = {
           id: listingResults[i].itemId[0],
@@ -144,6 +146,7 @@ app.get('/search', (req, res) => {
     resultData.listings = [...data.listings];
     resultData.listingCount = data.listingCount;
     resultData.listingPages = data.listingPages;
+    resultData.listingBrands = data.listingBrands
     res.send(resultData);
   })
   .catch((error) => {
