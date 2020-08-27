@@ -13,7 +13,7 @@ const brandSchema = new Schema ({
 const brandModel = mongoose.model('Brand', brandSchema);
 
 const validateBrandName = (word, callback) => {
-  brandModel.find({ brandName: word }, (err, result) => {
+  brandModel.find({ brandName: word.toLowerCase() }, (err, result) => {
     if (err) {
       callback(err, null);
     } else {

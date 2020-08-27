@@ -6,20 +6,37 @@ const db = require('../db/db.js');
 const app = express();
 const port = 3000;
 
-async function getBrandNamesFromListings() { // NEED TO REDO THIS
-    let word = req.query.brandToCheck;
+async function getBrandNamesFromListings(description) {
+  let brands = [];
+  let descWords = description.split(' ');
 
-    db.validateBrandName(word, (err, result) => {
-      if (err) {
-        res.send(err);
-      } else {
-        if (result.length !== 0) {
-          res.send(result);
+  for (let i = 0; i < descWords.length; i++) {
+
+    let promiseBrandValidation = new Promise((resolve, reject) => {
+      db.validateBrandName(descWords[i], (err, result) => {
+        if (err) {
+          //console.log(err);
+          reject(err);
         } else {
-          res.send('Not Found');
+          if (result.length !== 0) {
+            //console.log(result);
+            resolve(result);
+          } else {
+            //console.log('Not Found');
+            resolve(result);
+          }
         }
-      }
+      })
     })
+    let brand = await promiseBrandValidation;
+
+    if (brand.length > 0) {
+      brands.push(brand.map((b) => { return b.brandName }));
+    }
+  }
+  //console.log(brands);
+  return brands;
+
 }
 
 async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
@@ -51,7 +68,7 @@ async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
   return result;
 }
 
-const normalizeListings = (searchResults, source) => {
+async function normalizeListings(searchResults, source) {
   let tempObj = {
     tempListings: [],
     tempCount: source === 'ebay' ? parseInt(searchResults.paginationOutput[0].totalEntries[0]) : source === 'Reverb' ? searchResults.total : 0,
@@ -79,11 +96,14 @@ const normalizeListings = (searchResults, source) => {
       let listingResults = searchResults.searchResult[0].item;
       for (let i = 0; i < listingResults.length; i++) {
         let descriptionWords = listingResults[i].title[0];
+        let brands = await getBrandNamesFromListings(descriptionWords).then((data) => {
+          console.log(data)
+          return data });
         let listing = {
           id: listingResults[i].itemId[0],
           image: listingResults[i].galleryURL[0],
           name: listingResults[i].title[0],
-          brand: [''],
+          brand: brands.length >= 1 ? brands : 'Unknown',
           description: descriptionWords,
           price: parseInt(listingResults[i].sellingStatus[0].currentPrice[0].__value__),
           listingUrl: listingResults[i].viewItemURL[0],
