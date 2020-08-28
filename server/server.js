@@ -88,12 +88,13 @@ async function normalizeListings(searchResults, source) {
   if (source === 'Reverb') {
     let listingResults = searchResults.listings;
     for (let i = 0; i < listingResults.length; i++) {
-      tempObj.tempBrands[listingResults[i].make.toLowerCase()] = true;
+      let brandLower = listingResults[i].make.toLowerCase();
+      tempObj.tempBrands[brandLower] = true;
       let listing = {
         id: listingResults[i].id,
         image: listingResults[i].photos[0]._links.large_crop.href,
         name: listingResults[i].title,
-        brand: [listingResults[i].make],
+        brand: [brandLower],
         description: listingResults[i].description,
         price: parseInt(listingResults[i].price.amount),
         listingUrl: `http://reverb.com/item/${listingResults[i].id}`,
