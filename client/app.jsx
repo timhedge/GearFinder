@@ -18,7 +18,8 @@ export default class App extends React.Component {
       filterApplied: false,
       filterParams: {
         minPrice: undefined,
-        maxPrice: undefined
+        maxPrice: undefined,
+        brands: {}
       },
       currentPage: 1,
       pageCount: 1,
@@ -39,6 +40,7 @@ export default class App extends React.Component {
     this.handleMaxPriceFilterChange = this.handleMaxPriceFilterChange.bind(this);
     this.handleMinPriceFilterChange = this.handleMinPriceFilterChange.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
+    this.handleBrandSelectionFilter = this.handleBrandSelectionFilter.bind(this);
   }
 
   handleSortClick(event) {
@@ -46,33 +48,31 @@ export default class App extends React.Component {
       sortField: event.target.dataset.column,
       sortOrder: this.state.sortOrder === '' ? 'asc' : this.state.sortOrder === 'asc' ? 'desc' : ''
     }, () => {
-      console.log(this.state.currentPage);
       this.handleSearchClick(event, this.state.currentPage);
     })
   }
 
   filterListings(event) {
     event.preventDefault();
-    let filteredArray = [];
-    let unfilteredArray = this.state.listings;
-    let unfilteredPages = this.state.pageCount;
-    let filteredCount = 0;
 
-    for (let i = 0; i < this.state.listings.length; i++) {
-      if (this.state.listings[i].price <= this.state.filterParams.maxPrice && this.state.listings[i].price >= this.state.filterParams.minPrice) {
-        filteredArray.push(this.state.listings[i]);
-        filteredCount += 1;
+    let filteredArray = this.state.unfilteredListings.filter((listing) => {
+      if ((this.state.filterParams.minPrice === undefined || this.state.filterParams.minPrice === '') && (this.state.filterParams.maxPrice === undefined || this.state.filterParams.maxPrice === '')) {
+        return this.state.filterParams.brands[listing.brand] === true || Object.keys(this.state.filterParams.brands).length === 0;
+      } else if (this.state.filterParams.minPrice === undefined || this.state.filterParams.minPrice === '') {
+        return listing.price <= this.state.filterParams.maxPrice && (this.state.filterParams.brands[listing.brand] === true || Object.keys(this.state.filterParams.brands).length === 0);
+      } else if (this.state.filterParams.maxPrice === undefined || this.state.filterParams.maxPrice === '') {
+        return listing.price >= this.state.filterParams.minPrice && (this.state.filterParams.brands[listing.brand] === true || Object.keys(this.state.filterParams.brands).length === 0);
+      } else {
+        return listing.price <= this.state.filterParams.maxPrice && listing.price >= this.state.filterParams.minPrice && (this.state.filterParams.brands[listing.brand] === true || Object.keys(this.state.filterParams.brands).length === 0)
       }
-    }
+    })
 
     let filteredPageCount = Math.ceil(filteredArray.length / this.state.listingsPerPage);
 
     this.setState({
       listings: filteredArray,
-      unfilteredListings: unfilteredArray,
       filterApplied: true,
-      pageCount: filteredPageCount,
-      unfilteredPageCount: unfilteredPages
+      pageCount: filteredPageCount
     });
   }
 
@@ -83,7 +83,8 @@ export default class App extends React.Component {
       pageCount: this.state.unfilteredPageCount,
       filterParams: {
         minPrice: '',
-        maxPrice: ''
+        maxPrice: '',
+        brands: {}
       }
     })
   }
@@ -92,7 +93,8 @@ export default class App extends React.Component {
     this.setState({
       filterParams: {
         minPrice: parseInt(event.target.value),
-        maxPrice: this.state.filterParams.maxPrice
+        maxPrice: this.state.filterParams.maxPrice,
+        brands: this.state.filterParams.brands
       }
     });
   }
@@ -101,9 +103,37 @@ export default class App extends React.Component {
     this.setState({
       filterParams: {
         minPrice: this.state.filterParams.minPrice,
-        maxPrice: parseInt(event.target.value)
+        maxPrice: parseInt(event.target.value),
+        brands: this.state.filterParams.brands
       }
     });
+  }
+
+  handleBrandSelectionFilter(event) {
+    let selectedBrand = event.target.id;
+    let checked = event.target.checked;
+    let checkedBrands = this.state.filterParams.brands;
+
+    if (event.target.checked === true) {
+      console.log(checkedBrands)
+      checkedBrands[selectedBrand] = true;
+      this.setState({
+        filterParams: {
+          minPrice: this.state.filterParams.minPrice,
+          maxPrice: this.state.filterParams.maxPrice,
+          brands: checkedBrands
+        }
+      })
+    } else if (event.target.checked === false) {
+      delete checkedBrands[selectedBrand];
+      this.setState({
+        filterParams: {
+          minPrice: this.state.filterParams.minPrice,
+          maxPrice: this.state.filterParams.maxPrice,
+          brands: checkedBrands
+        }
+      })
+    }
   }
 
   sortListings() {
@@ -134,7 +164,6 @@ export default class App extends React.Component {
     if (page === undefined) {
       page = 1;
     }
-    console.log(page)
     this.setState({
       lastSearchText: this.state.searchText,
       listings: [],
@@ -160,7 +189,6 @@ export default class App extends React.Component {
   }
 
   handlePageClick(clickTarget) {
-    console.log(clickTarget.selected)
     this.setState({
       currentPage: clickTarget.selected + 1,
       listings: [],
@@ -182,13 +210,14 @@ export default class App extends React.Component {
       }
     })
     .then((results) => {
-      console.log(results.data);
+      console.log(results.data.listingBrands)
       this.setState({
         totalListings: results.data.listingCount,
         pageCount: results.data.listingPages,
         listings: [...results.data.listings],
         unsortedListings: [...results.data.listings],
         unfilteredListings: [...results.data.listings],
+        brandList: results.data.listingBrands,
         hideSearchResults: false
       }, () => {
       this.sortListings();
@@ -218,7 +247,7 @@ export default class App extends React.Component {
             <div className="container">
               <div className="row">
                 <div className="col-sm-2">
-                  <SearchResultsFilter filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} clearFilter={this.clearFilter} filterParams={this.state.filterParams}></SearchResultsFilter>
+                  <SearchResultsFilter handleBrandSelectionFilter={this.handleBrandSelectionFilter} filterListings={this.filterListings} handleMinPriceFilterChange={this.handleMinPriceFilterChange} handleMaxPriceFilterChange={this.handleMaxPriceFilterChange} clearFilter={this.clearFilter} filterParams={this.state.filterParams} brandList={this.state.brandList}></SearchResultsFilter>
                 </div>
                 <div className="col-sm-10">
                   <SearchResults listings={this.state.listings} sortOrder={this.state.sortOrder} sortField={this.state.sortField} handleSortClick={this.handleSortClick}/>
