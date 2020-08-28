@@ -9,7 +9,7 @@ const brandFilter = (props) => {
         {brands.map((brand, index) => {
           return (
             <div key={index}>
-              <input className="form-check-input" type="checkbox" value="" id={brand}></input>
+              <input className="form-check-input" type="checkbox" id={brand} checked={props.selectedBrands[brand]} onChange={props.handleBrandSelectionFilter}></input>
               <label className="form-check-label" htmlFor={brand}>
                 {brand[0].toUpperCase() + brand.substring(1)}
               </label>

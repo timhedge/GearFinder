@@ -22,4 +22,25 @@ const validateBrandName = (word, callback) => {
   })
 }
 
-module.exports = {validateBrandName}
+const addBrandName = (brand, callback) => {
+  let brandNameLower = brand.toLowerCase();
+  brandModel.find({ brandName: brandNameLower }, (err, result) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      if (result.length === 0) {
+        brandModel.create({ brandName: brandNameLower }, (err, result) => {
+          if (err) {
+            callback(err, null);
+          } else {
+            callback(null, result);
+          }
+        })
+      } else {
+        callback(null, result);
+      }
+    }
+  })
+}
+
+module.exports = {validateBrandName, addBrandName}

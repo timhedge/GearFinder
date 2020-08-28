@@ -6,6 +6,15 @@ const db = require('../db/db.js');
 const app = express();
 const port = 3000;
 
+const addValidBrandNames = (brand) => {
+    db.addBrandName(brand, (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+    })
+
+}
+
 async function getBrandNamesFromListings(description) {
   let brands = [];
   let descWords = description.split(' ');
@@ -15,14 +24,11 @@ async function getBrandNamesFromListings(description) {
     let promiseBrandValidation = new Promise((resolve, reject) => {
       db.validateBrandName(descWords[i], (err, result) => {
         if (err) {
-          //console.log(err);
           reject(err);
         } else {
           if (result.length !== 0) {
-            //console.log(result);
             resolve(result);
           } else {
-            //console.log('Not Found');
             resolve(result);
           }
         }
@@ -34,7 +40,7 @@ async function getBrandNamesFromListings(description) {
       brands.push(brand.map((b) => { return b.brandName }));
     }
   }
-  //console.log(brands);
+
   return brands;
 
 }
@@ -64,7 +70,7 @@ async function getListings(searchText, pageNum, sort, sortOrder, sortField) {
     listings: [...ebayData.tempListings, ...reverbData.tempListings],
     listingCount: ebayData.tempCount + reverbData.tempCount,
     listingPages: ebayData.tempPageCount > reverbData.tempPageCount ? ebayData.tempPageCount : reverbData.tempPageCount,
-    listingBrands: ebayData.tempBrands
+    listingBrands: {...ebayData.tempBrands, ...reverbData.tempBrands}
   }
   return result;
 }
@@ -82,6 +88,7 @@ async function normalizeListings(searchResults, source) {
   if (source === 'Reverb') {
     let listingResults = searchResults.listings;
     for (let i = 0; i < listingResults.length; i++) {
+      tempObj.tempBrands[listingResults[i].make.toLowerCase()] = true;
       let listing = {
         id: listingResults[i].id,
         image: listingResults[i].photos[0]._links.large_crop.href,
@@ -92,6 +99,7 @@ async function normalizeListings(searchResults, source) {
         listingUrl: `http://reverb.com/item/${listingResults[i].id}`,
         source: source
       }
+      addValidBrandNames(listingResults[i].make.toLowerCase());
       tempObj.tempListings.push(listing);
     }
   } else if (source === 'ebay') {
