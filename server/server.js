@@ -164,4 +164,6 @@ app.get('/search', (req, res) => {
 
 });
 
-app.listen(port, () => console.log(`GearFinder app listening at http://localhost:${port}`));
+const server = app.listen(port, () => console.log(`GearFinder app listening at http://localhost:${port}`));
+
+module.exports = { addValidBrandNames, getBrandNamesFromListings, getListings, normalizeListings, server }
